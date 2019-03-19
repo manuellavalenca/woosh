@@ -35,23 +35,51 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func createSky(){
-        //for i in 0...3{
-            if let image = UIImage(named: "testeipad-22.png"){
+        
+//        var imageSky = UIImage()
+//        for i in 0...4{
+//            if i == 4{
+//                if let image = UIImage(named: "skySun-23.png"){
+//                    imageSky = image
+//                }
+//            } else if i == 3{
+//                if let image = UIImage(named: "skySun-23.png"){
+//                    imageSky = image
+//                }
+//            } else{
+//                if let image = UIImage(named: "testeipad-22.png"){
+//                    imageSky = image
+//                }
+//            }
+//
+//            let skyTexture = SKTexture(image: imageSky)
+//            let skyNode = SKSpriteNode(texture: skyTexture)
+//            skyNode.name = "sky"
+//            skyNode.size = CGSize(width: (self.scene?.size.width)!, height: (self.scene?.size.height)!)
+//            skyNode.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+//            skyNode.position = CGPoint(x: 0, y:  CGFloat(i) * skyNode.size.height)
+//            self.addChild(skyNode)
+//
+//        }
+        
+        let arrayImages = [0: "testeipad-22.png", 1: "testeipad-22.png", 2: "skySun-23.png", 3: "skySun-23.png"]
+        
+        for imageName in arrayImages{
+            if let image = UIImage(named: imageName.value){
                 let skyTexture = SKTexture(image: image)
                 let skyNode = SKSpriteNode(texture: skyTexture)
                 skyNode.name = "sky"
                 skyNode.size = CGSize(width: (self.scene?.size.width)!, height: (self.scene?.size.height)!)
                 skyNode.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-                //y = CGFloat(i) * skyNode.size.height
-                skyNode.position = CGPoint(x: 0, y:  0)
+                skyNode.position = CGPoint(x: 0, y:  CGFloat(imageName.key) * skyNode.size.height)
                 self.addChild(skyNode)
             }
-        //}
-    }
+        }
+}
     
     func moveSky(){
         self.enumerateChildNodes(withName: "sky") { (node, error) in
-            node.position.y -= 2
+            node.position.y -= 5
             if node.position.y < -((self.scene?.size.height)!){
                 node.position.y += (self.scene?.size.height)! * 3
             }
@@ -140,7 +168,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(planet)
         
         // Move planet
-        let action = SKAction.moveTo(y: -self.size.height, duration: 5.5)
+        let action = SKAction.moveBy(x: 0, y: (self.scene?.size.height)!, duration: 5)
+        
+        //SKAction.moveTo(y: -(self.scene?.size.height)!, duration: 10)
         planet.run(action)
     }
     
@@ -170,12 +200,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func update(_ currentTime: TimeInterval) {
         let xMovement = SKAction.moveTo(x: self.destX, duration: 1)
         self.cometNode.run(xMovement)
-        //moveSky()
+        moveSky()
         deletePlanets()
         
         // ROTATION COMET Z
+        //        if self.accelerationx < 0.0 {
         
-//        if self.accelerationx < 0.0 {
 //            self.cometAngle = 270.0
 //        }else {
 //            self.cometAngle = 30
