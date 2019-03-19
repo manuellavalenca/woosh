@@ -35,17 +35,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func createSky(){
-        for i in 0...3{
-            if let image = UIImage(named: "skyTest-17.png"){
+        //for i in 0...3{
+            if let image = UIImage(named: "testeipad-22.png"){
                 let skyTexture = SKTexture(image: image)
                 let skyNode = SKSpriteNode(texture: skyTexture)
                 skyNode.name = "sky"
                 skyNode.size = CGSize(width: (self.scene?.size.width)!, height: (self.scene?.size.height)!)
                 skyNode.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-                skyNode.position = CGPoint(x: 0, y:  CGFloat(i) * skyNode.size.height)
+                //y = CGFloat(i) * skyNode.size.height
+                skyNode.position = CGPoint(x: 0, y:  0)
                 self.addChild(skyNode)
             }
-        }
+        //}
     }
     
     func moveSky(){
@@ -169,7 +170,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func update(_ currentTime: TimeInterval) {
         let xMovement = SKAction.moveTo(x: self.destX, duration: 1)
         self.cometNode.run(xMovement)
-        moveSky()
+        //moveSky()
         deletePlanets()
         
         // ROTATION COMET Z
@@ -186,7 +187,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 }
 
 // Load the SKScene from 'GameScene.sks'
-let sceneView = SKView(frame: CGRect(x:0 , y:0, width: 640, height: 480))
+let sceneView = SKView(frame: CGRect(x:0 , y:0, width: 480, height: 640))
 if let scene = GameScene(fileNamed: "GameScene") {
     // Set the scale mode to scale to fit the window
     scene.scaleMode = .aspectFill
