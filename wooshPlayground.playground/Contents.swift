@@ -26,43 +26,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     }
     
-    @objc static override var supportsSecureCoding: Bool {
-        // SKNode conforms to NSSecureCoding, so any subclass going
-        // through the decoding process must support secure coding
-        get {
-            return true
-        }
-    }
-    
     func createSky(){
         
-//        var imageSky = UIImage()
-//        for i in 0...4{
-//            if i == 4{
-//                if let image = UIImage(named: "skySun-23.png"){
-//                    imageSky = image
-//                }
-//            } else if i == 3{
-//                if let image = UIImage(named: "skySun-23.png"){
-//                    imageSky = image
-//                }
-//            } else{
-//                if let image = UIImage(named: "testeipad-22.png"){
-//                    imageSky = image
-//                }
-//            }
-//
-//            let skyTexture = SKTexture(image: imageSky)
-//            let skyNode = SKSpriteNode(texture: skyTexture)
-//            skyNode.name = "sky"
-//            skyNode.size = CGSize(width: (self.scene?.size.width)!, height: (self.scene?.size.height)!)
-//            skyNode.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-//            skyNode.position = CGPoint(x: 0, y:  CGFloat(i) * skyNode.size.height)
-//            self.addChild(skyNode)
-//
-//        }
-        
-        let arrayImages = [0: "testeipad-22.png", 1: "testeipad-22.png", 2: "skySun-23.png", 3: "skySun-23.png"]
+        let arrayImages = [0: "testeipad-22.png", 1: "testeipad-22.png", 2: "skySun-23.png", 3: "sunSky-25.png", 4: "sunEnd-24.png"]
         
         for imageName in arrayImages{
             if let image = UIImage(named: imageName.value){
@@ -80,8 +46,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func moveSky(){
         self.enumerateChildNodes(withName: "sky") { (node, error) in
             node.position.y -= 5
-            if node.position.y < -((self.scene?.size.height)!){
-                node.position.y += (self.scene?.size.height)! * 3
+            if node.position.y < -((self.scene?.size.height)!) {
+                node.position.y += (self.scene?.size.height)! * 5
             }
         }
     }
