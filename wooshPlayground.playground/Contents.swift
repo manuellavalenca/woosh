@@ -3,8 +3,11 @@
 import PlaygroundSupport
 import SpriteKit
 import CoreMotion
+import QuartzCore
+import AVKit
+import Vision
 
-class GameScene: SKScene, SKPhysicsContactDelegate {
+class GameScene: SKScene, SKPhysicsContactDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     // SpriteKit Variables
     var cometNode = SKSpriteNode()
@@ -14,6 +17,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var cometAngle : CGFloat = 0.0
     var accelerationx : Double = 0.0
     var motionManager = CMMotionManager()
+    
+    
+    
+    // AV configuration
+    var session: AVCaptureSession?
+    var previewLayer: AVCaptureVideoPreviewLayer?
+    
+    var videoDataOutput: AVCaptureVideoDataOutput?
+    var videoDataOutputQueue: DispatchQueue?
+    
+    var captureDevice: AVCaptureDevice?
+    var captureDeviceResolution: CGSize = CGSize()
+    
+    // Layer UI for drawing Vision results
+    var rootLayer: CALayer?
+    var detectionOverlayLayer: CALayer?
+    var detectedFaceRectangleShapeLayer: CAShapeLayer?
+    var detectedFaceLandmarksShapeLayer: CAShapeLayer?
+    
+    // Vision requests
+    private var detectionRequests: [VNDetectFaceRectanglesRequest]?
+    private var trackingRequests: [VNTrackObjectRequest]?
+    
+    lazy var sequenceRequestHandler = VNSequenceRequestHandler()
+    
+    
+    
     
     override func didMove(to view: SKView) {
         
@@ -36,8 +66,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 let skyNode = SKSpriteNode(texture: skyTexture)
                 skyNode.name = "sky"
                 skyNode.size = CGSize(width: (self.scene?.size.width)!, height: (self.scene?.size.height)!)
-                skyNode.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-                skyNode.position = CGPoint(x: 0, y:  CGFloat(imageName.key) * skyNode.size.height)
+                //skyNode.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+                if imageName.key == 0{
+                    skyNode.position = CGPoint(x: 0, y: 0)
+                } else{
+                    skyNode.position = CGPoint(x: 0, y: CGFloat(imageName.key) * skyNode.size.height - 100)
+                }
                 self.addChild(skyNode)
             }
         }

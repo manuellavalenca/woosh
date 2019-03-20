@@ -8,13 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		49AEF767224260620049C261 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AEF766224260620049C261 /* AppDelegate.swift */; };
-		49AEF76B224260620049C261 /* Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AEF76A224260620049C261 /* Scene.swift */; };
 		49AEF76D224260620049C261 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AEF76C224260620049C261 /* ViewController.swift */; };
 		49AEF770224260620049C261 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49AEF76E224260620049C261 /* Main.storyboard */; };
 		49AEF772224260630049C261 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 49AEF771224260630049C261 /* Assets.xcassets */; };
 		49AEF775224260630049C261 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49AEF773224260630049C261 /* LaunchScreen.storyboard */; };
 		49AEF780224260630049C261 /* faceTrackingTestsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AEF77F224260630049C261 /* faceTrackingTestsTests.swift */; };
 		49AEF78B224260630049C261 /* faceTrackingTestsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AEF78A224260630049C261 /* faceTrackingTestsUITests.swift */; };
+		49AEF799224274780049C261 /* wooshComet-12.png in Resources */ = {isa = PBXBuildFile; fileRef = 49AEF798224274770049C261 /* wooshComet-12.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,7 +37,6 @@
 /* Begin PBXFileReference section */
 		49AEF763224260620049C261 /* faceTrackingTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = faceTrackingTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		49AEF766224260620049C261 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		49AEF76A224260620049C261 /* Scene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
 		49AEF76C224260620049C261 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		49AEF76F224260620049C261 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		49AEF771224260630049C261 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -49,6 +48,7 @@
 		49AEF786224260630049C261 /* faceTrackingTestsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = faceTrackingTestsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		49AEF78A224260630049C261 /* faceTrackingTestsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = faceTrackingTestsUITests.swift; sourceTree = "<group>"; };
 		49AEF78C224260630049C261 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		49AEF798224274770049C261 /* wooshComet-12.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wooshComet-12.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,10 +100,10 @@
 			isa = PBXGroup;
 			children = (
 				49AEF766224260620049C261 /* AppDelegate.swift */,
-				49AEF76A224260620049C261 /* Scene.swift */,
 				49AEF76C224260620049C261 /* ViewController.swift */,
 				49AEF76E224260620049C261 /* Main.storyboard */,
 				49AEF771224260630049C261 /* Assets.xcassets */,
+				49AEF798224274770049C261 /* wooshComet-12.png */,
 				49AEF773224260630049C261 /* LaunchScreen.storyboard */,
 				49AEF776224260630049C261 /* Info.plist */,
 			);
@@ -232,6 +232,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49AEF799224274780049C261 /* wooshComet-12.png in Resources */,
 				49AEF775224260630049C261 /* LaunchScreen.storyboard in Resources */,
 				49AEF772224260630049C261 /* Assets.xcassets in Resources */,
 				49AEF770224260620049C261 /* Main.storyboard in Resources */,
@@ -260,7 +261,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				49AEF76D224260620049C261 /* ViewController.swift in Sources */,
-				49AEF76B224260620049C261 /* Scene.swift in Sources */,
 				49AEF767224260620049C261 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

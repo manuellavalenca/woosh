@@ -8,12 +8,11 @@
 
 import UIKit
 import SceneKit
-import SpriteKit
 import ARKit
 
 class ViewController: UIViewController {
     
-    let wooshCometImage = UIImage()
+    var wooshCometImage = UIImage()
     
     @IBOutlet weak var arSceneView: ARSCNView!
     
@@ -46,7 +45,7 @@ class ViewController: UIViewController {
     
     func updateFeatures(for node: SCNNode, using anchor: ARFaceAnchor) {
         
-        let woosh = node.childNode(withName: "woosh", recursively: false) as? SCNNode
+        let woosh = node.childNode(withName: "woosh", recursively: false)
         
         // Vertice with index 9 -> nose
         //let vertices = [anchor.geometry.vertices[9])]
@@ -79,7 +78,10 @@ extension ViewController: ARSCNViewDelegate {
         
         let wooshPlane = SCNPlane(width: 0.035, height: 0.035)
         
-        wooshPlane.firstMaterial?.diffuse.contents = self.wooshCometImage
+        if let image = UIImage(named: "wooshComet-12.png"){
+            self.wooshCometImage = image
+             wooshPlane.firstMaterial?.diffuse.contents = self.wooshCometImage
+        }
         
         let wooshNode = SCNNode(geometry: wooshPlane)
         
