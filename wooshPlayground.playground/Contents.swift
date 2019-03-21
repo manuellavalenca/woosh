@@ -15,4 +15,5 @@ if let scene = GameScene(fileNamed: "GameScene") {
     // Present the scene
     sceneView.presentScene(scene)
 }
+
 PlaygroundSupport.PlaygroundPage.current.liveView = sceneView

@@ -14,7 +14,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     var accelerationx : Double = 0.0
     var motionManager = CMMotionManager()
     var labelTimingCount = 0
-    var label = SKLabelNode()
+    var labelDeath = SKLabelNode()
+    var death = false
     
     // Labels
     let arraySunTexts = ["After all those billion years, you died","Exploding in the sun. You've seen quite a lot around the space, huh?","Death is our only true, isn't?","And you managed to live your last years as beautiful as your magnificent life","But well, life is a cycle","Enjoy your ride"]
@@ -182,29 +183,33 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func showTexts(){
-        self.label.position = CGPoint(x: 0, y: 0)
-        self.label.name = "label"
+        self.labelDeath.position = CGPoint(x: 0, y: 0)
+        self.labelDeath.name = "label"
         //self.label.physicsBody?.categoryBitMask = self.labelBitCategory
-        self.label.text = ""
-        self.label.fontSize = 40.0
-        self.label.fontColor = UIColor.white
-        self.label.zPosition = 3.0
+        self.labelDeath.text = "ih morreu"
+        self.labelDeath.fontSize = 40.0
+        self.labelDeath.fontColor = UIColor.white
+        self.labelDeath.zPosition = 3.0
         
-        self.addChild(self.label)
-        
-        let showLabel = SKAction.run {
-            self.label.text = "oie"
-        }
-        let waitAction = SKAction.wait(forDuration: 1.0)
-        self.run(SKAction.sequence([showLabel,waitAction]))
+        self.addChild(self.labelDeath)
+
+//        let showLabel = SKAction.run {
+//            self.label.text = "oie"
+//        }
+//
+//        let waitAction = SKAction.wait(forDuration: 1.0)
+//        self.label.run(SKAction.sequence([showLabel,waitAction]))
         
     }
     
     public func didBegin(_ contact: SKPhysicsContact) {
         print("OA A COLISAO")
-        if contact.bodyA.node?.name == "planet" || contact.bodyB.node?.name == "planet"{
-            //self.showTexts()
-            print("OA A COLISAO COM PLANETA")
+        if death == false{
+            if contact.bodyA.node?.name == "planet" || contact.bodyB.node?.name == "planet"{
+                self.showTexts()
+                print("OA A COLISAO COM PLANETA")
+                death = true
+            }
         }
     }
     
