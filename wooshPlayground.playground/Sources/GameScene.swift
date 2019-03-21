@@ -17,9 +17,6 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     var labelDeath = SKLabelNode()
     var death = false
     
-    // Labels
-    let arraySunTexts = ["After all those billion years, you died","Exploding in the sun. You've seen quite a lot around the space, huh?","Death is our only true, isn't?","And you managed to live your last years as beautiful as your magnificent life","But well, life is a cycle","Enjoy your ride"]
-    
     override public func didMove(to view: SKView) {
         self.physicsWorld.contactDelegate = self
         createSky()
@@ -193,12 +190,36 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         self.addChild(self.labelDeath)
 
-//        let showLabel = SKAction.run {
-//            self.label.text = "oie"
-//        }
-//
-//        let waitAction = SKAction.wait(forDuration: 1.0)
-//        self.label.run(SKAction.sequence([showLabel,waitAction]))
+        let showLabel1 = SKAction.run {
+            self.labelDeath.text = "After all those billion years, you died"
+        }
+        
+        let showLabel2 = SKAction.run {
+            self.labelDeath.text = "Exploding in the sun. You've seen quite a lot around the space, huh?"
+        }
+        
+        let showLabel3 = SKAction.run {
+            self.labelDeath.text = "Death is our only true, isn't?"
+        }
+        
+        let showLabel4 = SKAction.run {
+            self.labelDeath.text = "And you managed to live your last years as beautiful as your magnificent life"
+        }
+        
+        let showLabel5 = SKAction.run {
+            self.labelDeath.text = "But well, life is a cycle"
+        }
+        
+        let showLabel6 = SKAction.run {
+            self.labelDeath.text = "Enjoy your ride"
+        }
+        
+        let deleteNode = SKAction.run {
+            self.labelDeath.removeFromParent()
+        }
+
+        let waitAction = SKAction.wait(forDuration: 4.0)
+        self.labelDeath.run(SKAction.sequence([showLabel1,waitAction,showLabel2,waitAction,showLabel3,waitAction,showLabel4,waitAction,showLabel5,waitAction,showLabel6,waitAction,deleteNode]))
         
     }
     
