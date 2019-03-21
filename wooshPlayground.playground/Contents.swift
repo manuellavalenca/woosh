@@ -31,7 +31,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func createSky(){
         
-        let arrayImages = [0: "testeipad-22.png", 1: "testeipad-22.png", 2: "skySun-23.png", 3: "sunSky-25.png", 4: "sunSky-25.png", 5: "sunEnd-24.png"]
+        let arrayImages = [0: "skyBlue-22.png", 1: "skyBlue-22.png", 2: "skyBlueYellow-23.png", 3: "skyYellow-25.png", 4: "skyYellow-25.png", 5: "skyYellowBlue-24.png"]
         
         for imageName in arrayImages{
             if let image = UIImage(named: imageName.value){
@@ -43,8 +43,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 //skyNode.anchorPoint = CGPoint(x: 0.5, y: 0.5)
                 if imageName.key == 0{
                     skyNode.position = CGPoint(x: 0, y: 0)
-                } else{
-                    skyNode.position = CGPoint(x: 0, y: CGFloat(imageName.key) * skyNode.size.height)
+                } else {
+                    skyNode.position = CGPoint(x: 0, y: CGFloat(imageName.key) * (skyNode.size.height-5))
                     if imageName.key == 2{
                         let sunNode = SKShapeNode(rect: CGRect(x: 0, y: 0, width: (self.scene?.size.width)!, height: 300))
                         sunNode.name = "sun"
@@ -199,7 +199,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         print("OA A COLISAO")
         if contact.bodyA.node?.name == "planet" || contact.bodyB.node?.name == "planet"{
-            self.showTexts()
+            //self.showTexts()
             print("OA A COLISAO COM PLANETA")
         }
     }
