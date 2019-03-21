@@ -3,23 +3,20 @@
 import PlaygroundSupport
 import SpriteKit
 import CoreMotion
-import QuartzCore
-import AVKit
-import Vision
 
-class GameScene: SKScene, SKPhysicsContactDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // SpriteKit Variables
     var cometNode = SKSpriteNode()
     var destX : CGFloat = 0.0
     let planetBitCategory  : UInt32 = 0b01
     let cometBitCategory : UInt32 = 0b01
+    let labelBitCategory :UInt32 = 0b00
     var cometAngle : CGFloat = 0.0
     var accelerationx : Double = 0.0
     var motionManager = CMMotionManager()
     var labelTimingCount = 0
-    let label = SKLabelNode()
-    var labelTimer = Timer()
+    var label = SKLabelNode()
     
     // Labels
     let arraySunTexts = ["After all those billion years, you died","Exploding in the sun. You've seen quite a lot around the space, huh?","Death is our only true, isn't?","And you managed to live your last years as beautiful as your magnificent life","But well, life is a cycle","Enjoy your ride"]
@@ -41,6 +38,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVCaptureVideoDataOutputSamp
                 let skyTexture = SKTexture(image: image)
                 let skyNode = SKSpriteNode(texture: skyTexture)
                 skyNode.name = "sky"
+                skyNode.zPosition = 0.0
                 skyNode.size = CGSize(width: (self.scene?.size.width)!, height: (self.scene?.size.height)!)
                 //skyNode.anchorPoint = CGPoint(x: 0.5, y: 0.5)
                 if imageName.key == 0{
@@ -181,29 +179,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVCaptureVideoDataOutputSamp
     
     func showTexts(){
         self.label.position = CGPoint(x: 0, y: 0)
-        self.label.text = "teste"
+        self.label.name = "label"
+        //self.label.physicsBody?.categoryBitMask = self.labelBitCategory
+        self.label.text = ""
         self.label.fontSize = 40.0
         self.label.fontColor = UIColor.white
         self.label.zPosition = 3.0
         
-        self.addChild(self.label)
+        self.addChild(self.label) 
         
-        self.labelTimer = Timer(timeInterval: 1.0, target: self, selector:"changeLabel", userInfo: nil, repeats: true)
-        self.label.text = "\(self.arraySunTexts[self.labelTimingCount])"
-        
-    }
-    
-    func changeLabel() {
-        print("ENTROU AQUI NO CHANGE LABEL")
-        self.label.text = "\(self.arraySunTexts[self.labelTimingCount])"
-        
-        if (self.labelTimingCount == self.arraySunTexts.count) {
-            self.labelTimer.invalidate()
+        let showLabel = SKAction.run {
+            self.label.text = "oie"
         }
+        let waitAction = SKAction.wait(forDuration: 1.0)
+        self.run(SKAction.sequence([showLabel,waitAction]))
         
-        self.labelTimingCount += 1
     }
-
     
     func didBegin(_ contact: SKPhysicsContact) {
         print("OA A COLISAO")
@@ -219,16 +210,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVCaptureVideoDataOutputSamp
         moveSky()
         deletePlanets()
         
-        // ROTATION COMET Z
-        //        if self.accelerationx < 0.0 {
-        
-//            self.cometAngle = 270.0
-//        }else {
-//            self.cometAngle = 30
-//        }
-//        let rotation = SKAction.rotate(byAngle: self.cometAngle, duration: 10)
-//        self.cometNode.run(rotation)
-//        print(self.accelerationx)
     }
 }
 
