@@ -18,32 +18,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVCaptureVideoDataOutputSamp
     var accelerationx : Double = 0.0
     var motionManager = CMMotionManager()
     
-    
-    
-    // AV configuration
-    var session: AVCaptureSession?
-    var previewLayer: AVCaptureVideoPreviewLayer?
-    
-    var videoDataOutput: AVCaptureVideoDataOutput?
-    var videoDataOutputQueue: DispatchQueue?
-    
-    var captureDevice: AVCaptureDevice?
-    var captureDeviceResolution: CGSize = CGSize()
-    
-    // Layer UI for drawing Vision results
-    var rootLayer: CALayer?
-    var detectionOverlayLayer: CALayer?
-    var detectedFaceRectangleShapeLayer: CAShapeLayer?
-    var detectedFaceLandmarksShapeLayer: CAShapeLayer?
-    
-    // Vision requests
-    private var detectionRequests: [VNDetectFaceRectanglesRequest]?
-    private var trackingRequests: [VNTrackObjectRequest]?
-    
-    lazy var sequenceRequestHandler = VNSequenceRequestHandler()
-    
-    
-    
+    // Labels
+    let arraySunTexts = ["After all those billion years, you died","Exploding in the sun. You've seen quite a lot around the space, huh?","Death is our only true, isn't?","And you managed to live your last years as beautiful as your magnificent life","But well, life is a cycle","Enjoy your ride"]
     
     override func didMove(to view: SKView) {
         
@@ -58,7 +34,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVCaptureVideoDataOutputSamp
     
     func createSky(){
         
-        let arrayImages = [0: "testeipad-22.png", 1: "testeipad-22.png", 2: "skySun-23.png", 3: "sunSky-25.png", 4: "sunEnd-24.png"]
+        let arrayImages = [0: "testeipad-22.png", 1: "testeipad-22.png", 2: "skySun-23.png", 3: "sunSky-25.png", 4: "sunSky-25.png", 5: "sunEnd-24.png"]
         
         for imageName in arrayImages{
             if let image = UIImage(named: imageName.value){
@@ -70,12 +46,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVCaptureVideoDataOutputSamp
                 if imageName.key == 0{
                     skyNode.position = CGPoint(x: 0, y: 0)
                 } else{
-                    skyNode.position = CGPoint(x: 0, y: CGFloat(imageName.key) * skyNode.size.height - 100)
+                    skyNode.position = CGPoint(x: 0, y: CGFloat(imageName.key) * skyNode.size.height)
+                    if imageName.key == 2{
+                        let sunNode = SKShapeNode(rect: CGRect(x: 0, y: 0, width: (self.scene?.size.width)!, height: 300))
+                        sunNode.name = "sun"
+                        sunNode.position = CGPoint(x: 0, y: CGFloat(imageName.key) * skyNode.size.height)
+                        self.addChild(sunNode)
+                    }
                 }
                 self.addChild(skyNode)
             }
         }
-}
+    }
     
     func moveSky(){
         self.enumerateChildNodes(withName: "sky") { (node, error) in
@@ -84,6 +66,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVCaptureVideoDataOutputSamp
                 node.position.y += (self.scene?.size.height)! * 5
             }
         }
+        
+        self.enumerateChildNodes(withName: "sun") { (node, error) in
+            node.position.y -= 5
+            if node.position.y < -((self.scene?.size.height)!) {
+                node.position.y += (self.scene?.size.height)! * 5
+            }
+        }
+
     }
     
     func createComet(){
@@ -192,8 +182,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVCaptureVideoDataOutputSamp
         }
     }
     
+    func showTexts(){
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 21))
+        label.center = CGPoint(x: 240, y: 320)
+        label.textAlignment = .center
+        label.text = "teste"
+        self.view?.addSubview(label)
+    }
+
+    
     func didBegin(_ contact: SKPhysicsContact) {
         print("OA A COLISAO")
+        if contact.bodyA.node?.name == "planet" || contact.bodyB.node?.name == "planet"{
+            //self.showTexts()
+            print("OA A COLISAO COM PLANETA")
+        }
+
         
     }
     
