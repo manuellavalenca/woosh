@@ -17,19 +17,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVCaptureVideoDataOutputSamp
     var cometAngle : CGFloat = 0.0
     var accelerationx : Double = 0.0
     var motionManager = CMMotionManager()
+    var labelTimingCount = 0
+    let label = SKLabelNode()
+    var labelTimer = Timer()
     
     // Labels
     let arraySunTexts = ["After all those billion years, you died","Exploding in the sun. You've seen quite a lot around the space, huh?","Death is our only true, isn't?","And you managed to live your last years as beautiful as your magnificent life","But well, life is a cycle","Enjoy your ride"]
     
     override func didMove(to view: SKView) {
-        
         self.physicsWorld.contactDelegate = self
-        
         createSky()
         createComet()
         moveComet()
         createPlanetsTimer()
-
     }
     
     func createSky(){
@@ -77,7 +77,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVCaptureVideoDataOutputSamp
     }
     
     func createComet(){
-        
         cometNode.position = CGPoint(x: 0, y: -20)
         cometNode.zPosition = 2.0
         if let cometImage = UIImage(named: "wooshComet-12.png"){
@@ -97,7 +96,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVCaptureVideoDataOutputSamp
     }
     
     func moveComet(){
-        
         // Accelerometer data
         if motionManager.isAccelerometerAvailable {
             print("Tem acelerometro")
@@ -115,7 +113,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVCaptureVideoDataOutputSamp
     }
     
     func createPlanetNode(){
-        
         // Create images for textures
         var bluePlanetImage = UIImage()
         var redPlanetImage = UIImage()
@@ -183,22 +180,37 @@ class GameScene: SKScene, SKPhysicsContactDelegate, AVCaptureVideoDataOutputSamp
     }
     
     func showTexts(){
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 21))
-        label.center = CGPoint(x: 240, y: 320)
-        label.textAlignment = .center
-        label.text = "teste"
-        self.view?.addSubview(label)
+        self.label.position = CGPoint(x: 0, y: 0)
+        self.label.text = "teste"
+        self.label.fontSize = 40.0
+        self.label.fontColor = UIColor.white
+        self.label.zPosition = 3.0
+        
+        self.addChild(self.label)
+        
+        self.labelTimer = Timer(timeInterval: 1.0, target: self, selector:"changeLabel", userInfo: nil, repeats: true)
+        self.label.text = "\(self.arraySunTexts[self.labelTimingCount])"
+        
+    }
+    
+    func changeLabel() {
+        print("ENTROU AQUI NO CHANGE LABEL")
+        self.label.text = "\(self.arraySunTexts[self.labelTimingCount])"
+        
+        if (self.labelTimingCount == self.arraySunTexts.count) {
+            self.labelTimer.invalidate()
+        }
+        
+        self.labelTimingCount += 1
     }
 
     
     func didBegin(_ contact: SKPhysicsContact) {
         print("OA A COLISAO")
         if contact.bodyA.node?.name == "planet" || contact.bodyB.node?.name == "planet"{
-            //self.showTexts()
+            self.showTexts()
             print("OA A COLISAO COM PLANETA")
         }
-
-        
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -229,5 +241,4 @@ if let scene = GameScene(fileNamed: "GameScene") {
     // Present the scene
     sceneView.presentScene(scene)
 }
-
 PlaygroundSupport.PlaygroundPage.current.liveView = sceneView
