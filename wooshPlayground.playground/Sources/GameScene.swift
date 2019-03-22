@@ -7,10 +7,10 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     // SpriteKit Variables
     var cometNode = SKSpriteNode()
     var destX : CGFloat = 0.0
-    let planetBitCategory  : UInt32 = 0b001//0b01
-    let sunBitCategory : UInt32 = 0b010//0b11
-    let cometBitCategory : UInt32 = 0b100//0b01
-    let labelBitCategory :UInt32 = 0b00
+    let planetBitCategory  : UInt32 = 0b0001//0b01
+    let sunBitCategory : UInt32 = 0b0010//0b11
+    let cometBitCategory : UInt32 = 0b0100//0b01
+    let labelBitCategory :UInt32 = 0b1000
     var cometAngle : CGFloat = 0.0
     var accelerationx : Double = 0.0
     var motionManager = CMMotionManager()
@@ -48,8 +48,6 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.addChild(skyNode)
             }
         }
-
-        //let sunNode = SKShapeNode(rect: CGRect(x: 0, y: 0, width: (self.scene?.size.width)!, height: 100))
         
         let sunNode = SKShapeNode(rectOf: CGSize(width: (self.scene?.size.width)!, height: 100))
         
@@ -67,7 +65,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         sunNode.physicsBody?.allowsRotation = false
         sunNode.physicsBody?.isDynamic = false
         
-        sunNode.position = CGPoint(x: 0, y: 2300)
+        sunNode.position = CGPoint(x: 0, y: 2500)
         
         self.addChild(sunNode)
 
@@ -84,7 +82,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         self.enumerateChildNodes(withName: "sun") { (node, error) in
             node.position.y -= 5
             if node.frame.minY < -((self.scene?.size.height)!/2 + node.frame.height) {
-                node.position.y = 2200
+                node.position.y = (4 * (self.scene?.size.height)!) + 400
             }
 
         }
