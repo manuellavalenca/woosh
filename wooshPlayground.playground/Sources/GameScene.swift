@@ -29,7 +29,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let arrayImages = [0: "skyBlue-22.png", 1: "skyBlue-22.png", 2: "skyBlueYellow-23.png", 3: "skyYellow-25.png", 4: "skyYellow-25.png", 5: "skyYellowandBlue-24.png"]
         
-        for index in 0..<arrayImages.count{
+        for index in 0..<arrayImages.count {
             let imageName = (key: index, value: arrayImages[index]!)
             print(imageName.value)
             if let image = UIImage(named: imageName.value){
@@ -43,16 +43,17 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                     skyNode.position = CGPoint(x: 0, y: 0)
                 } else {
                     skyNode.position = CGPoint(x: 0, y: CGFloat(imageName.key) * (skyNode.size.height-5))
-                    if imageName.key == 2{
-                        let sunNode = SKShapeNode(rect: CGRect(x: 0, y: 0, width: (self.scene?.size.width)!, height: 300))
-                        sunNode.name = "sun"
-                        sunNode.position = CGPoint(x: 0, y: CGFloat(imageName.key) * skyNode.size.height)
-                        self.addChild(sunNode)
-                    }
                 }
                 self.addChild(skyNode)
             }
         }
+
+        let sunNode = SKShapeNode(rect: CGRect(x: -(self.scene?.size.width)!/2, y: 2300, width: (self.scene?.size.width)!, height: 100))
+        sunNode.fillColor = UIColor.white
+        sunNode.zPosition = 5.0
+        sunNode.name = "sun"
+        self.addChild(sunNode)
+
     }
     
     public func moveSky(){
@@ -65,9 +66,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         self.enumerateChildNodes(withName: "sun") { (node, error) in
             node.position.y -= 5
-            if node.position.y < -((self.scene?.size.height)!) {
-                node.position.y += (self.scene?.size.height)! * 5
-            }
+//            if node.position.y < -((self.scene?.size.height)!/2 + (2 * node.frame.height)) {
+//                node.position.y = 1500
+//            }
         }
         
     }
@@ -187,6 +188,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         self.labelDeath.fontSize = 40.0
         self.labelDeath.fontColor = UIColor.white
         self.labelDeath.zPosition = 3.0
+
+        
         
         self.addChild(self.labelDeath)
 
@@ -195,7 +198,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         let showLabel2 = SKAction.run {
-            self.labelDeath.text = "Exploding in the sun. You've seen quite a lot around the space, huh?"
+            self.labelDeath.text = "You've seen quite a lot around the space..."
         }
         
         let showLabel3 = SKAction.run {
@@ -203,7 +206,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         let showLabel4 = SKAction.run {
-            self.labelDeath.text = "And you managed to live your last years as beautiful as your magnificent life"
+            self.labelDeath.text = "You lived your last years as beautiful as your magnificent life"
         }
         
         let showLabel5 = SKAction.run {
