@@ -66,11 +66,11 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         self.enumerateChildNodes(withName: "sun") { (node, error) in
             node.position.y -= 5
-//            if node.position.y < -((self.scene?.size.height)!/2 + (2 * node.frame.height)) {
-//                node.position.y = 1500
-//            }
-        }
+            if node.frame.minY < -((self.scene?.size.height)!/2 + node.frame.height) {
+                node.position.y = 2200
+            }
         
+        }
     }
     
     public func createComet(){
