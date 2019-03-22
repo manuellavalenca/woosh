@@ -7,10 +7,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     // SpriteKit Variables
     var cometNode = SKSpriteNode()
     var destX : CGFloat = 0.0
-    let planetBitCategory  : UInt32 = 0b0001//0b01
-    let sunBitCategory : UInt32 = 0b0010//0b11
-    let cometBitCategory : UInt32 = 0b0100//0b01
-    let labelBitCategory :UInt32 = 0b1000
+    let planetBitCategory  : UInt32 = 0b001//0b01
+    let sunBitCategory : UInt32 = 0b010//0b11
+    let cometBitCategory : UInt32 = 0b100//0b01
     var cometAngle : CGFloat = 0.0
     var accelerationx : Double = 0.0
     var motionManager = CMMotionManager()
@@ -98,6 +97,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             cometNode.size = CGSize(width: cometImage.size.width/4, height: cometImage.size.height/4)
             cometNode.physicsBody = SKPhysicsBody(texture: SKTexture(image: cometImage), size: CGSize(width: cometImage.size.width/4, height: cometImage.size.height/4))
             cometNode.physicsBody?.affectedByGravity = false
+            cometNode.physicsBody?.allowsRotation = false
         }
         
         cometNode.physicsBody?.categoryBitMask = cometBitCategory
@@ -203,7 +203,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         self.labelDeath.text = "ih morreu"
         self.labelDeath.fontSize = 40.0
         self.labelDeath.fontColor = UIColor.white
-        self.labelDeath.zPosition = 3.0
+        self.labelDeath.zPosition = 5.0
 
         
         
@@ -249,6 +249,25 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.showTexts()
                 print("OA A COLISAO COM O SOLLL")
                 death = true
+                
+                var node = SKNode()
+                
+                if contact.bodyB.node?.name == "comet"{
+                    node = contact.bodyB.node!
+                } else if contact.bodyA.node?.name == "comet"{
+                    node = contact.bodyA.node!
+                }
+                
+                let fadeOut = SKAction.fadeAlpha(to:0, duration: 2.0)
+                let changePosition = SKAction.run {
+                    node.position = CGPoint(x: 0, y: -20)
+                    self.death = false
+                }
+                let fadeIn = SKAction.fadeAlpha(to:1, duration: 2.0)
+                let wait = SKAction.wait(forDuration: 5.0)
+                
+                node.run(SKAction.sequence([fadeOut,changePosition, wait, fadeIn]))
+                
             }
         }
     }
