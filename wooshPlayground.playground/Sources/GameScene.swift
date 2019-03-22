@@ -174,6 +174,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         planet.physicsBody?.categoryBitMask = planetBitCategory
         planet.physicsBody?.collisionBitMask = cometBitCategory
         planet.physicsBody?.contactTestBitMask = cometBitCategory
+        planet.physicsBody?.affectedByGravity = false
         
         planet.run(SKAction.fadeIn(withDuration: 2.0))
         self.addChild(planet)
@@ -184,7 +185,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func createPlanetsTimer(){
-        let wait = SKAction.wait(forDuration: 2, withRange: 3)
+        let wait = SKAction.wait(forDuration: 4, withRange: 3)
         let spawn = SKAction.run {
             self.createPlanetNode()
         }
@@ -199,8 +200,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 node.removeFromParent()
             }
             else{
-                print("andando")
-                node.position.y -= 1
+                node.position.y -= 2.0
             }
         }
     }
@@ -308,6 +308,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             
             self.gameStarted = true
             createComet()
+            moveComet()
             createPlanetsTimer()
             self.startButton.removeFromParent()
             
