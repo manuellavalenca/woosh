@@ -222,9 +222,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(self.labelDeath)
         
         // Create button to go through labels
-        passLabel.size = CGSize(width: 300, height: 202)
-        passLabel.texture = SKTexture(image: UIImage(named: "startButton-21.png")!)
-        passLabel.position = CGPoint(x: 0, y: -300);
+        passLabel.size = CGSize(width: 100, height: 100)
+        passLabel.texture = SKTexture(image: UIImage(named: "passLabelButton-27.png")!)
+        passLabel.position = CGPoint(x: 0, y: -100);
         self.addChild(passLabel)
         
 
