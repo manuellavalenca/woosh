@@ -178,11 +178,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         planet.run(SKAction.fadeIn(withDuration: 2.0))
         self.addChild(planet)
         
-        // Move planet
-        let action = SKAction.moveBy(x: 0, y: (self.scene?.size.height)!, duration: 15)
-
-        //SKAction.moveTo(y: -(self.scene?.size.height)!, duration: 10)
-        planet.run(action)
+//        // Move planet
+//        let action = SKAction.moveBy(x: 0, y: (self.scene?.size.height)!, duration: 15)
+//        planet.run(action)
     }
     
     public func createPlanetsTimer(){
@@ -200,10 +198,10 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             if node.position.y < -((self.scene?.size.height)!/2 + node.frame.size.height){
                 node.removeFromParent()
             }
-//            else{
-//                print("andando")
-//                node.position.y -= 1
-//            }
+            else{
+                print("andando")
+                node.position.y -= 1
+            }
         }
     }
     
@@ -305,12 +303,14 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     override public func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?){
         let touch = touches.first
         let touchLocation = touch!.location(in: self)
-        // Check if the location of the touch is within the button's bounds
+        
         if self.startButton.contains(touchLocation) {
-            moveSky()
+            
+            self.gameStarted = true
             createComet()
             createPlanetsTimer()
             self.startButton.removeFromParent()
+            
             print("tapped!")
         }
         
