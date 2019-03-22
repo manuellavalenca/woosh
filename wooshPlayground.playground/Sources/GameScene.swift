@@ -18,6 +18,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     var death = false
     var gameStarted = false
     let startButton = SKSpriteNode()
+    let passLabel = SKSpriteNode()
+    var arrayLabel = ["After all those billion years, you died","You've seen quite a lot around the space...", "Death is our only true, isn't?", "You lived your last years as beautiful as your magnificent life", "But well, life is a cycle", "Enjoy your ride"]
+    var arrayLabelPosition = 0
     
     override public func didMove(to view: SKView) {
         self.physicsWorld.contactDelegate = self
@@ -206,51 +209,57 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func showTextsSun(){
+        
         self.labelDeath.position = CGPoint(x: 0, y: 0)
         self.labelDeath.name = "label"
         //self.label.physicsBody?.categoryBitMask = self.labelBitCategory
-        self.labelDeath.text = ""
+        self.labelDeath.text = arrayLabel[arrayLabelPosition]
         self.labelDeath.fontSize = 40.0
         self.labelDeath.fontColor = UIColor.white
         self.labelDeath.zPosition = 5.0
+        self.labelDeath.text = arrayLabel[arrayLabelPosition]
 
-        
-        
         self.addChild(self.labelDeath)
+        
+        // Create button to go through labels
+        passLabel.size = CGSize(width: 300, height: 202)
+        passLabel.texture = SKTexture(image: UIImage(named: "startButton-21.png")!)
+        passLabel.position = CGPoint(x: 0, y: -300);
+        self.addChild(passLabel)
+        
 
-        let showLabel1 = SKAction.run {
-            self.labelDeath.text = "After all those billion years, you died"
-        }
-        
-        let showLabel2 = SKAction.run {
-            self.labelDeath.text = "You've seen quite a lot around the space..."
-        }
-        
-        let showLabel3 = SKAction.run {
-            self.labelDeath.text = "Death is our only true, isn't?"
-        }
-        
-        let showLabel4 = SKAction.run {
-            self.labelDeath.text = "You lived your last years as beautiful as your magnificent life"
-        }
-        
-        let showLabel5 = SKAction.run {
-            self.labelDeath.text = "But well, life is a cycle"
-        }
-        
-        let showLabel6 = SKAction.run {
-            self.labelDeath.text = "Enjoy your ride"
-        }
-        
-        let deleteNode = SKAction.run {
-            self.labelDeath.removeFromParent()
-        }
-
-        let waitAction = SKAction.wait(forDuration: 4.0)
-        self.labelDeath.run(SKAction.sequence([showLabel1,waitAction,showLabel2,waitAction,showLabel3,waitAction,showLabel4,waitAction,showLabel5,waitAction,showLabel6,waitAction,deleteNode]))
+//        let showLabel1 = SKAction.run {
+//            self.labelDeath.text = "After all those billion years, you died"
+//        }
+//
+//        let showLabel2 = SKAction.run {
+//            self.labelDeath.text = "You've seen quite a lot around the space..."
+//        }
+//
+//        let showLabel3 = SKAction.run {
+//            self.labelDeath.text = "Death is our only true, isn't?"
+//        }
+//
+//        let showLabel4 = SKAction.run {
+//            self.labelDeath.text = "You lived your last years as beautiful as your magnificent life"
+//        }
+//
+//        let showLabel5 = SKAction.run {
+//            self.labelDeath.text = "But well, life is a cycle"
+//        }
+//
+//        let showLabel6 = SKAction.run {
+//            self.labelDeath.text = "Enjoy your ride"
+//        }
+//
+//        let deleteNode = SKAction.run {
+//            self.labelDeath.removeFromParent()
+//        }
+//
+//        let waitAction = SKAction.wait(forDuration: 4.0)
+//        self.labelDeath.run(SKAction.sequence([showLabel1,waitAction,showLabel2,waitAction,showLabel3,waitAction,showLabel4,waitAction,showLabel5,waitAction,showLabel6,waitAction,deleteNode]))
         
     }
-    
 
     
     public func didBegin(_ contact: SKPhysicsContact) {
@@ -266,10 +275,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 
                 self.showTextsSun()
-                
-                print("OA A COLISAO COM O SOLLL")
-                death = true
-                
+    
                 var node = SKNode()
                 
                 if contact.bodyB.node?.name == "comet"{
@@ -291,7 +297,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 let enablePlanetContact = SKAction.run {
                     node.physicsBody?.categoryBitMask = self.cometBitCategory
                 }
-                let wait = SKAction.wait(forDuration: 5.0)
+                let wait = SKAction.wait(forDuration: 15.0)
                 
                 node.run(SKAction.sequence([disablePlanetContact,fadeOut,changePosition, wait, fadeIn, enablePlanetContact]))
                 
@@ -312,6 +318,17 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             createPlanetsTimer()
             self.startButton.removeFromParent()
             
+        }
+        
+        if self.passLabel.contains(touchLocation) {
+            arrayLabelPosition += 1
+            if arrayLabelPosition < arrayLabel.count{
+                self.labelDeath.text = arrayLabel[arrayLabelPosition]
+            } else{
+                arrayLabelPosition = 0
+                self.labelDeath.removeFromParent()
+                self.passLabel.removeFromParent()
+            }
             print("tapped!")
         }
         
