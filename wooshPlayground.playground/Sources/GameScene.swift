@@ -7,22 +7,26 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     // SpriteKit Variables
     var cometNode = SKSpriteNode()
     var destX : CGFloat = 0.0
-    let planetBitCategory  : UInt32 = 0b001//0b01
-    let sunBitCategory : UInt32 = 0b010//0b11
-    let cometBitCategory : UInt32 = 0b100//0b01
+    let planetBitCategory  : UInt32 = 0b001
+    let sunBitCategory : UInt32 = 0b010
+    let cometBitCategory : UInt32 = 0b100
     var cometAngle : CGFloat = 0.0
     var accelerationx : Double = 0.0
     var motionManager = CMMotionManager()
     var labelTimingCount = 0
     var labelDeath = SKLabelNode()
     var death = false
+    var gameStarted = false
+    let startButton = SKSpriteNode()
     
     override public func didMove(to view: SKView) {
         self.physicsWorld.contactDelegate = self
         createSky()
-        createComet()
-        moveComet()
-        createPlanetsTimer()
+        
+        startButton.size = CGSize(width: 300, height: 202)
+        startButton.texture = SKTexture(image: UIImage(named: "startButton-21.png")!)
+        startButton.position = CGPoint(x: 0, y: 0);
+        self.addChild(startButton)
     }
     
     public func createSky(){
@@ -38,7 +42,6 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 skyNode.name = "sky"
                 skyNode.zPosition = 0.0
                 skyNode.size = CGSize(width: (self.scene?.size.width)!, height: (self.scene?.size.height)!)
-                //skyNode.anchorPoint = CGPoint(x: 0.5, y: 0.5)
                 if imageName.key == 0{
                     skyNode.position = CGPoint(x: 0, y: 0)
                 } else {
@@ -71,24 +74,26 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func moveSky(){
+        
         self.enumerateChildNodes(withName: "sky") { (node, error) in
-            node.position.y -= 5
+            node.position.y -= 0.5
             if node.position.y < -((self.scene?.size.height)!) {
                 node.position.y += (self.scene?.size.height)! * 5
             }
         }
         
         self.enumerateChildNodes(withName: "sun") { (node, error) in
-            node.position.y -= 5
+            node.position.y -= 0.5
             if node.frame.minY < -((self.scene?.size.height)!/2 + node.frame.height) {
                 node.position.y = (4 * (self.scene?.size.height)!) + 400
             }
 
         }
+        
     }
     
     public func createComet(){
-        cometNode.position = CGPoint(x: 0, y: -20)
+        cometNode.position = CGPoint(x: 0, y: -(self.scene?.size.height)!/3)
         cometNode.zPosition = 2.0
         if let cometImage = UIImage(named: "wooshComet-12.png"){
             print("Texture created")
@@ -104,7 +109,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         cometNode.physicsBody?.collisionBitMask =  sunBitCategory //| planetBitCategory
         cometNode.physicsBody?.contactTestBitMask = planetBitCategory
         
+        cometNode.alpha = 0
         self.addChild(cometNode)
+        cometNode.run(SKAction.fadeAlpha(to:1, duration: 2.0))
         
     }
     
@@ -172,8 +179,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(planet)
         
         // Move planet
-        let action = SKAction.moveBy(x: 0, y: (self.scene?.size.height)!, duration: 5)
-        
+        let action = SKAction.moveBy(x: 0, y: (self.scene?.size.height)!, duration: 15)
+
         //SKAction.moveTo(y: -(self.scene?.size.height)!, duration: 10)
         planet.run(action)
     }
@@ -193,14 +200,18 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             if node.position.y < -((self.scene?.size.height)!/2 + node.frame.size.height){
                 node.removeFromParent()
             }
+//            else{
+//                print("andando")
+//                node.position.y -= 1
+//            }
         }
     }
     
-    public func showTexts(){
+    public func showTextsSun(){
         self.labelDeath.position = CGPoint(x: 0, y: 0)
         self.labelDeath.name = "label"
         //self.label.physicsBody?.categoryBitMask = self.labelBitCategory
-        self.labelDeath.text = "ih morreu"
+        self.labelDeath.text = ""
         self.labelDeath.fontSize = 40.0
         self.labelDeath.fontColor = UIColor.white
         self.labelDeath.zPosition = 5.0
@@ -242,11 +253,22 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
+
+    
     public func didBegin(_ contact: SKPhysicsContact) {
-        print("OA A COLISAO")
+
         if death == false {
+            
+            // Death with sun
             if (contact.bodyA.node?.name == "sun" && contact.bodyB.node?.name == "comet") || (contact.bodyA.node?.name == "comet" && contact.bodyB.node?.name == "sun") {
-                self.showTexts()
+                
+                
+                self.enumerateChildNodes(withName: "label") { (node, error) in
+                    node.removeFromParent()
+                }
+                
+                self.showTextsSun()
+                
                 print("OA A COLISAO COM O SOLLL")
                 death = true
                 
@@ -258,25 +280,48 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                     node = contact.bodyA.node!
                 }
                 
+                
+                let disablePlanetContact = SKAction.run {
+                    node.physicsBody?.categoryBitMask = self.sunBitCategory
+                }
                 let fadeOut = SKAction.fadeAlpha(to:0, duration: 2.0)
                 let changePosition = SKAction.run {
                     node.position = CGPoint(x: 0, y: -20)
                     self.death = false
                 }
                 let fadeIn = SKAction.fadeAlpha(to:1, duration: 2.0)
+                let enablePlanetContact = SKAction.run {
+                    node.physicsBody?.categoryBitMask = self.cometBitCategory
+                }
                 let wait = SKAction.wait(forDuration: 5.0)
                 
-                node.run(SKAction.sequence([fadeOut,changePosition, wait, fadeIn]))
+                node.run(SKAction.sequence([disablePlanetContact,fadeOut,changePosition, wait, fadeIn, enablePlanetContact]))
                 
             }
+            
         }
     }
     
-    override public func update(_ currentTime: TimeInterval) {
-        let xMovement = SKAction.moveTo(x: self.destX, duration: 1)
-        self.cometNode.run(xMovement)
-        moveSky()
-        deletePlanets()
+    override public func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?){
+        let touch = touches.first
+        let touchLocation = touch!.location(in: self)
+        // Check if the location of the touch is within the button's bounds
+        if self.startButton.contains(touchLocation) {
+            moveSky()
+            createComet()
+            createPlanetsTimer()
+            self.startButton.removeFromParent()
+            print("tapped!")
+        }
         
+    }
+    
+    override public func update(_ currentTime: TimeInterval) {
+        if gameStarted == true{
+            let xMovement = SKAction.moveTo(x: self.destX, duration: 1)
+            self.cometNode.run(xMovement)
+            moveSky()
+            deletePlanets()
+        }
     }
 }
