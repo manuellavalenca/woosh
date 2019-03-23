@@ -60,12 +60,13 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         do {
             player = try AVAudioPlayer(contentsOf: url)
             guard let player = player else { return }
-            
+            player.numberOfLoops = -1
             player.prepareToPlay()
             player.play()
         } catch let error {
             print(error.localizedDescription)
         }
+        
     }
     
     public func createSky(){
@@ -157,7 +158,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         cometNode.alpha = 0
         self.addChild(cometNode)
-        cometNode.run(SKAction.fadeAlpha(to:1, duration: 2.0))
+        cometNode.run(SKAction.fadeAlpha(to:1, duration: 4.0))
         
     }
     
