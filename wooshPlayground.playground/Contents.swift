@@ -7,6 +7,9 @@
  ![Playground icon](wooshName-28.png)
  
  Enjoy your life in space!
+ Play woosh in upstand position
+ 
+ Music from https://www.zapsplat.com
  
  *[Designing your tutorial](Designing)
  

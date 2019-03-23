@@ -70,6 +70,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let arrayImages = [0: "skyBlue-22.png", 1: "skyBlue-22.png", 2: "skyBlueYellow-23.png", 3: "skyYellow-25.png", 4: "skyYellow-25.png", 5: "skyYellowandBlue-24.png"]
         
+        // Create one node with each sky image
         for index in 0..<arrayImages.count {
             let imageName = (key: index, value: arrayImages[index]!)
             print(imageName.value)
@@ -88,10 +89,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
+        
+        // Create sun node
         let sunNode = SKShapeNode(rectOf: CGSize(width: (self.scene?.size.width)!, height: 100))
-        
-        
-        //sunNode.fillColor = UIColor.white
         sunNode.zPosition = 2.0
         sunNode.name = "sun"
         
@@ -99,7 +99,6 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         sunNode.physicsBody?.categoryBitMask = sunBitCategory
         sunNode.physicsBody?.collisionBitMask = cometBitCategory
         sunNode.physicsBody?.contactTestBitMask = cometBitCategory
-
         sunNode.physicsBody?.affectedByGravity = false
         sunNode.physicsBody?.allowsRotation = false
         sunNode.physicsBody?.isDynamic = false
@@ -113,6 +112,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     public func moveSky(){
         
+        // Move sky nodes and change position after
         self.enumerateChildNodes(withName: "sky") { (node, error) in
             node.position.y -= 0.5
             if node.position.y < -((self.scene?.size.height)!) {
@@ -120,6 +120,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
+        // Move sun node and change position after
         self.enumerateChildNodes(withName: "sun") { (node, error) in
             node.position.y -= 0.5
             if node.frame.minY < -((self.scene?.size.height)!/2 + node.frame.height) {
@@ -131,22 +132,25 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func createComet(){
+        
         cometNode.position = CGPoint(x: 0, y: -(self.scene?.size.height)!/3)
         cometNode.zPosition = 2.0
-        if let cometImage = UIImage(named: "wooshComet-12.png"){
-            print("Texture created")
-            cometNode.texture = SKTexture(image: cometImage)
-            cometNode.name = "comet"
-            cometNode.size = CGSize(width: cometImage.size.width/4, height: cometImage.size.height/4)
-            cometNode.physicsBody = SKPhysicsBody(texture: SKTexture(image: cometImage), size: CGSize(width: cometImage.size.width/4, height: cometImage.size.height/4))
-            cometNode.physicsBody?.affectedByGravity = false
-            cometNode.physicsBody?.allowsRotation = false
-            
-            
-        }
+        
+        // Avoid woosh comet to get out of scene
+        let xRange = SKRange(lowerLimit: -((scene?.size.width)!/2),upperLimit: (scene?.size.width)!/2)
+        let yRange = SKRange(lowerLimit: -(self.scene?.size.height)!/3,upperLimit: -(self.scene?.size.height)!/3)
+        cometNode.constraints = [SKConstraint.positionX(xRange,y:yRange)]
+        
+        let cometImage = UIImage(named: "wooshComet-12.png")!
+        cometNode.texture = SKTexture(image: cometImage)
+        cometNode.name = "comet"
+        cometNode.size = CGSize(width: cometImage.size.width/4, height: cometImage.size.height/4)
+        cometNode.physicsBody = SKPhysicsBody(texture: SKTexture(image: cometImage), size: CGSize(width: cometImage.size.width/4, height: cometImage.size.height/4))
+        cometNode.physicsBody?.affectedByGravity = false
+        cometNode.physicsBody?.allowsRotation = false
         
         cometNode.physicsBody?.categoryBitMask = cometBitCategory
-        cometNode.physicsBody?.collisionBitMask =  sunBitCategory //| planetBitCategory
+        cometNode.physicsBody?.collisionBitMask =  sunBitCategory
         cometNode.physicsBody?.contactTestBitMask = planetBitCategory
         
         cometNode.alpha = 0
@@ -156,6 +160,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func moveComet(){
+        
         // Accelerometer data
         if motionManager.isAccelerometerAvailable {
             print("Tem acelerometro")
@@ -173,28 +178,15 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func createPlanetNode(){
+        
         // Create images for textures
-        
-        //MUDAR AQUI
-        var bluePlanetImage = UIImage()
-        var redPlanetImage = UIImage()
-        var greenPlanetImage = UIImage()
-        
-        if let image = UIImage(named: "planeta1-18.png"){
-            bluePlanetImage = image
-        }
-        if let image = UIImage(named: "planeta2-19.png"){
-            redPlanetImage = image
-        }
-        if let image = UIImage(named: "planeta3-20.png"){
-            greenPlanetImage = image
-        }
+        let bluePlanetImage = UIImage(named: "planeta1-18.png")!
+        let redPlanetImage = UIImage(named: "planeta2-19.png")!
+        let greenPlanetImage = UIImage(named: "planeta3-20.png")!
         
         // Random textures
         let arrayPlanetImages = [bluePlanetImage, redPlanetImage, greenPlanetImage]
-        
-        //VER AQUI TB
-        let planetRandomTexture = SKTexture(image: arrayPlanetImages.randomElement() ?? bluePlanetImage)
+        let planetRandomTexture = SKTexture(image: arrayPlanetImages.randomElement()!)
         
         // Random position
         let maxLimit = self.size.width/2 - (bluePlanetImage.size.width)/2
@@ -260,39 +252,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         passLabel.texture = SKTexture(image: UIImage(named: "passLabelButton-27.png")!)
         passLabel.position = CGPoint(x: 0, y: -100);
         self.addChild(passLabel)
-        
 
-//        let showLabel1 = SKAction.run {
-//            self.labelDeath.text = "After all those billion years, you died"
-//        }
-//
-//        let showLabel2 = SKAction.run {
-//            self.labelDeath.text = "You've seen quite a lot around the space..."
-//        }
-//
-//        let showLabel3 = SKAction.run {
-//            self.labelDeath.text = "Death is our only true, isn't?"
-//        }
-//
-//        let showLabel4 = SKAction.run {
-//            self.labelDeath.text = "You lived your last years as beautiful as your magnificent life"
-//        }
-//
-//        let showLabel5 = SKAction.run {
-//            self.labelDeath.text = "But well, life is a cycle"
-//        }
-//
-//        let showLabel6 = SKAction.run {
-//            self.labelDeath.text = "Enjoy your ride"
-//        }
-//
-//        let deleteNode = SKAction.run {
-//            self.labelDeath.removeFromParent()
-//        }
-//
-//        let waitAction = SKAction.wait(forDuration: 4.0)
-//        self.labelDeath.run(SKAction.sequence([showLabel1,waitAction,showLabel2,waitAction,showLabel3,waitAction,showLabel4,waitAction,showLabel5,waitAction,showLabel6,waitAction,deleteNode]))
-        
     }
 
     
