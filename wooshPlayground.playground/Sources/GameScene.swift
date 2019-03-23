@@ -43,12 +43,14 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         wooshLogo.texture = SKTexture(image: UIImage(named: "wooshName-28.png")!)
         wooshLogo.size = CGSize(width: 800, height: 453)
         wooshLogo.position = CGPoint(x: 0, y: (self.scene?.size.height)!/5)
+        wooshLogo.alpha = 1
         self.addChild(wooshLogo)
         
         // Create start button
         startButton.size = CGSize(width: 200, height: 77)
         startButton.texture = SKTexture(image: UIImage(named: "startButton-24.png")!)
         startButton.position = CGPoint(x: 0, y: -(self.scene?.size.height)!/4)
+        startButton.alpha = 1
         self.addChild(startButton)
     }
     
@@ -238,8 +240,6 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         self.labelDeath.position = CGPoint(x: 0, y: 0)
         self.labelDeath.name = "label"
-        //self.label.physicsBody?.categoryBitMask = self.labelBitCategory
-        
         self.labelDeath.fontSize = 40.0
         self.labelDeath.fontColor = UIColor.white
         self.labelDeath.zPosition = 5.0
@@ -308,13 +308,19 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if self.startButton.contains(touchLocation) && self.gameStarted == false {
             
-            print("ENTROU NA FUNCAO DO START BUTTON")
             self.gameStarted = true
             createComet()
             moveComet()
             createPlanetsTimer()
-            self.startButton.removeFromParent()
-            self.wooshLogo.removeFromParent()
+            let fadeOut = SKAction.fadeAlpha(to:0, duration: 1.5)
+            let deleteNode = SKAction.run {
+                self.removeFromParent()
+            }
+            let sequence = SKAction.sequence([fadeOut, deleteNode])
+           
+            self.wooshLogo.run(sequence)
+            self.startButton.run(sequence)
+            
             
         }
         
@@ -328,7 +334,6 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.labelDeath.removeFromParent()
                 self.passLabel.removeFromParent()
             }
-            print("tapped!")
         }
         
     }
