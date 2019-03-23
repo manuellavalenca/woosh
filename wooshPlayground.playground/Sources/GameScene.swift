@@ -270,33 +270,28 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 
                 self.showTextsSun()
+                
                 self.death = true
                 
                 var node = SKNode()
                 
-                if contact.bodyB.node?.name == "comet"{
-                    node = contact.bodyB.node!
-                } else if contact.bodyA.node?.name == "comet"{
-                    node = contact.bodyA.node!
-                }
                 
                 
+//                if contact.bodyB.node?.name == "comet"{
+//                    node = contact.bodyB.node!
+//                } else if contact.bodyA.node?.name == "comet"{
+//                    node = contact.bodyA.node!
+//                }
+//
+//
+                // Avoid killing it again when it has just died
                 let disablePlanetContact = SKAction.run {
-                    node.physicsBody?.categoryBitMask = self.sunBitCategory
+                    self.cometNode.physicsBody?.categoryBitMask = self.sunBitCategory
                 }
+
+
                 let fadeOut = SKAction.fadeAlpha(to:0, duration: 2.0)
-                let changePosition = SKAction.run {
-                    node.position = CGPoint(x: 0, y: -20)
-                    self.death = false
-                }
-                let fadeIn = SKAction.fadeAlpha(to:1, duration: 2.0)
-                
-                let enablePlanetContact = SKAction.run {
-                    node.physicsBody?.categoryBitMask = self.cometBitCategory
-                }
-                let wait = SKAction.wait(forDuration: 15.0)
-                
-                node.run(SKAction.sequence([disablePlanetContact,fadeOut,changePosition, wait, fadeIn, enablePlanetContact]))
+                self.cometNode.run(SKAction.sequence([disablePlanetContact,fadeOut]))
                 
             }
             
@@ -334,9 +329,22 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 arrayLabelPosition = 0
                 self.labelDeath.removeFromParent()
                 self.passLabel.removeFromParent()
+                self.rebornComet()
             }
         }
         
+    }
+    
+    public func rebornComet(){
+        
+        let fadeIn = SKAction.fadeAlpha(to:1, duration: 2.0)
+        
+        let enablePlanetContact = SKAction.run {
+            self.cometNode.physicsBody?.categoryBitMask = self.cometBitCategory
+        }
+        
+        self.cometNode.run(SKAction.sequence([fadeIn, enablePlanetContact]))
+
     }
     
     override public func update(_ currentTime: TimeInterval) {
