@@ -342,6 +342,15 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     override public func update(_ currentTime: TimeInterval) {
         if gameStarted == true{
             let xMovement = SKAction.moveTo(x: self.destX, duration: 1)
+            
+            if self.destX < (self.cometNode.position.x - 40) {
+                self.cometNode.texture = SKTexture(image: UIImage(named: "wooshComet-12-2.png")!)
+            } else if self.destX > (self.cometNode.position.x + 40){
+                self.cometNode.texture = SKTexture(image: UIImage(named: "wooshComet-12.png")!)
+            } else{
+                self.cometNode.texture = SKTexture(image: UIImage(named: "wooshComet-29.png")!)
+            }
+            
             self.cometNode.run(xMovement)
             moveSky()
             deletePlanets()
