@@ -1,6 +1,7 @@
 import Foundation
 import SpriteKit
 import CoreMotion
+import UIKit
 
 public class GameScene: SKScene, SKPhysicsContactDelegate {
     
@@ -13,7 +14,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     var cometAngle : CGFloat = 0.0
     var accelerationx : Double = 0.0
     var motionManager = CMMotionManager()
-    var labelTimingCount = 0
+    
+    
     var labelDeath = SKLabelNode()
     var death = false
     var gameStarted = false
@@ -24,10 +26,11 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override public func didMove(to view: SKView) {
         self.physicsWorld.contactDelegate = self
+        
         createSky()
         
         startButton.size = CGSize(width: 300, height: 202)
-        startButton.texture = SKTexture(image: UIImage(named: "startButton-21.png")!)
+        startButton.texture = SKTexture(image: UIImage(named: "startGame-21.png")!)
         startButton.position = CGPoint(x: 0, y: 0);
         self.addChild(startButton)
     }
@@ -57,7 +60,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         let sunNode = SKShapeNode(rectOf: CGSize(width: (self.scene?.size.width)!, height: 100))
         
         
-        sunNode.fillColor = UIColor.white
+        //sunNode.fillColor = UIColor.white
         sunNode.zPosition = 2.0
         sunNode.name = "sun"
         
@@ -128,8 +131,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 if let accelerometerData = data{
                     self.accelerationx = accelerometerData.acceleration.x
                     let currentX = self.cometNode.position.x
-                    self.destX =  currentX + CGFloat(self.accelerationx * 500)
                     
+                    self.destX =  currentX + CGFloat(self.accelerationx * 500)
                 }
             }
         }
@@ -182,9 +185,6 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         planet.run(SKAction.fadeIn(withDuration: 2.0))
         self.addChild(planet)
         
-//        // Move planet
-//        let action = SKAction.moveBy(x: 0, y: (self.scene?.size.height)!, duration: 15)
-//        planet.run(action)
     }
     
     public func createPlanetsTimer(){
@@ -213,7 +213,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         self.labelDeath.position = CGPoint(x: 0, y: 0)
         self.labelDeath.name = "label"
         //self.label.physicsBody?.categoryBitMask = self.labelBitCategory
-        self.labelDeath.text = arrayLabel[arrayLabelPosition]
+        
         self.labelDeath.fontSize = 40.0
         self.labelDeath.fontColor = UIColor.white
         self.labelDeath.zPosition = 5.0
@@ -275,7 +275,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 
                 self.showTextsSun()
-    
+                self.death = true
+                
                 var node = SKNode()
                 
                 if contact.bodyB.node?.name == "comet"{
@@ -294,6 +295,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                     self.death = false
                 }
                 let fadeIn = SKAction.fadeAlpha(to:1, duration: 2.0)
+                
                 let enablePlanetContact = SKAction.run {
                     node.physicsBody?.categoryBitMask = self.cometBitCategory
                 }
@@ -310,8 +312,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         let touch = touches.first
         let touchLocation = touch!.location(in: self)
         
-        if self.startButton.contains(touchLocation) {
+        if self.startButton.contains(touchLocation) && self.gameStarted == false {
             
+            print("ENTROU NA FUNCAO DO START BUTTON")
             self.gameStarted = true
             createComet()
             moveComet()
@@ -321,6 +324,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if self.passLabel.contains(touchLocation) {
+            
             arrayLabelPosition += 1
             if arrayLabelPosition < arrayLabel.count{
                 self.labelDeath.text = arrayLabel[arrayLabelPosition]
@@ -330,6 +334,17 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.passLabel.removeFromParent()
             }
             print("tapped!")
+            
+//            print("\(self.arrayLabelPosition)")
+//            self.arrayLabelPosition += 1
+//            if self.arrayLabelPosition < self.arrayLabel.count{
+//                print("\(self.arrayLabelPosition)")
+//                self.labelDeath.text = self.arrayLabel[arrayLabelPosition]
+//            } else{
+//                arrayLabelPosition = 0
+//                self.labelDeath.removeFromParent()
+//                self.passLabel.removeFromParent()
+//            }
         }
         
     }
