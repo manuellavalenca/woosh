@@ -2,6 +2,7 @@ import Foundation
 import SpriteKit
 import CoreMotion
 import UIKit
+import AVFoundation
 
 public class GameScene: SKScene, SKPhysicsContactDelegate {
     
@@ -20,19 +21,49 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     var death = false
     var gameStarted = false
     let startButton = SKSpriteNode()
+    let wooshLogo = SKSpriteNode()
     let passLabel = SKSpriteNode()
-    var arrayLabel = ["After all those billion years, you died","You've seen quite a lot around the space...", "Death is our only true, isn't?", "You lived your last years as beautiful as your magnificent life", "But well, life is a cycle", "Enjoy your ride"]
+    var arrayLabel = ["After all those billion years, you died","You've seen quite a lot around the space...", "Death is our only true, isn't?", "You had a magnificent life", "But well, life is a cycle", "Enjoy your ride"]
     var arrayLabelPosition = 0
+    
+    var player : AVAudioPlayer?
+    
     
     override public func didMove(to view: SKView) {
         self.physicsWorld.contactDelegate = self
-        
+        playMusic()
         createSky()
+        createHomeScreen()
         
-        startButton.size = CGSize(width: 300, height: 202)
-        startButton.texture = SKTexture(image: UIImage(named: "startGame-21.png")!)
-        startButton.position = CGPoint(x: 0, y: 0);
+    }
+    
+    public func createHomeScreen(){
+        
+        // Create Woosh Logo
+        wooshLogo.texture = SKTexture(image: UIImage(named: "wooshName-28.png")!)
+        wooshLogo.size = CGSize(width: 800, height: 453)
+        wooshLogo.position = CGPoint(x: 0, y: (self.scene?.size.height)!/5)
+        self.addChild(wooshLogo)
+        
+        // Create start button
+        startButton.size = CGSize(width: 200, height: 77)
+        startButton.texture = SKTexture(image: UIImage(named: "startButton-24.png")!)
+        startButton.position = CGPoint(x: 0, y: -(self.scene?.size.height)!/4)
         self.addChild(startButton)
+    }
+    
+    public func playMusic() {
+        let url = Bundle.main.url(forResource: "audio_hero_Song", withExtension: "mp3")!
+        
+        do {
+            player = try AVAudioPlayer(contentsOf: url)
+            guard let player = player else { return }
+            
+            player.prepareToPlay()
+            player.play()
+        } catch let error {
+            print(error.localizedDescription)
+        }
     }
     
     public func createSky(){
@@ -64,7 +95,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         sunNode.zPosition = 2.0
         sunNode.name = "sun"
         
-        sunNode.physicsBody = SKPhysicsBody(rectangleOf: sunNode.frame.size)// CGSize(width: (self.scene?.size.width)!, height: 100))
+        sunNode.physicsBody = SKPhysicsBody(rectangleOf: sunNode.frame.size)
         sunNode.physicsBody?.categoryBitMask = sunBitCategory
         sunNode.physicsBody?.collisionBitMask = cometBitCategory
         sunNode.physicsBody?.contactTestBitMask = cometBitCategory
@@ -75,6 +106,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         sunNode.position = CGPoint(x: 0, y: 2500)
         
+        sunNode.alpha = 0.0
         self.addChild(sunNode)
 
     }
@@ -109,6 +141,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             cometNode.physicsBody = SKPhysicsBody(texture: SKTexture(image: cometImage), size: CGSize(width: cometImage.size.width/4, height: cometImage.size.height/4))
             cometNode.physicsBody?.affectedByGravity = false
             cometNode.physicsBody?.allowsRotation = false
+            
+            
         }
         
         cometNode.physicsBody?.categoryBitMask = cometBitCategory
@@ -320,6 +354,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             moveComet()
             createPlanetsTimer()
             self.startButton.removeFromParent()
+            self.wooshLogo.removeFromParent()
             
         }
         
@@ -334,17 +369,6 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.passLabel.removeFromParent()
             }
             print("tapped!")
-            
-//            print("\(self.arrayLabelPosition)")
-//            self.arrayLabelPosition += 1
-//            if self.arrayLabelPosition < self.arrayLabel.count{
-//                print("\(self.arrayLabelPosition)")
-//                self.labelDeath.text = self.arrayLabel[arrayLabelPosition]
-//            } else{
-//                arrayLabelPosition = 0
-//                self.labelDeath.removeFromParent()
-//                self.passLabel.removeFromParent()
-//            }
         }
         
     }
