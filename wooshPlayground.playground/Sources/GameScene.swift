@@ -106,8 +106,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         // Create planets count background
-        self.planetsCountBackground.size = CGSize(width: 400, height: 100)
-        self.planetsCountBackground.position = CGPoint(x: 0, y: (self.scene?.size.height)!/3)
+        self.planetsCountBackground.size = CGSize(width: 240, height: 100)
+        self.planetsCountBackground.position = CGPoint(x: 0, y: (self.scene?.size.height)!/2 - self.planetsCountBackground.size.height/2)
         self.planetsCountBackground.texture = SKTexture(image: UIImage(named: "backgroundPlanetCount-36.png")!)
         self.planetsCountBackground.zPosition = 10.0
         self.planetsCountBackground.alpha = 1
@@ -117,13 +117,11 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         let planet1 = SKSpriteNode()
         let planet2 = SKSpriteNode()
         let planet3 = SKSpriteNode()
-        let planet4 = SKSpriteNode()
-        let planet5 = SKSpriteNode()
         
-        self.planetsCountNodes = [planet1, planet2, planet3, planet4, planet5]
+        self.planetsCountNodes = [planet1, planet2, planet3]
         for planet in self.planetsCountNodes{
             planet.size = CGSize(width: 60, height: 60)
-            planet.position = CGPoint(x: CGFloat((70 * self.planetsCountNodes.firstIndex(of: planet)!)) + self.planetsCountBackground.frame.minX + 60, y: (self.scene?.size.height)!/3)
+            planet.position = CGPoint(x: CGFloat((70 * self.planetsCountNodes.firstIndex(of: planet)!)) + self.planetsCountBackground.frame.minX + 50, y: (self.scene?.size.height)!/2 - self.planetsCountBackground.size.height/2)
             planet.texture = SKTexture(image: UIImage(named: "planetEmpty-38.png")!)
             planet.zPosition = 10.0
             planet.alpha = 1
@@ -455,7 +453,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         if self.planetsCollided <= self.planetsCountNodes.count{
             self.planetsCountNodes[self.planetsCollided].texture = SKTexture(image: UIImage(named: "planetFull-39.png")!)
         } else{
-            self.planetsCountNodes[4].texture = SKTexture(image: UIImage(named: "planetFull-39.png")!)
+            self.planetsCountNodes[2].texture = SKTexture(image: UIImage(named: "planetFull-39.png")!)
         }
         self.planetsCollided += 1
         
@@ -470,7 +468,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     public func verifyPlanetsCollided(){
         print("PLANETS COLLIDED: \(self.planetsCollided)")
-        if self.planetsCollided >= 5{
+        if self.planetsCollided >= 3{
             print("PERDEU MERMAO")
             self.planetsCollided = 0
             for planet in self.planetsCountNodes{
@@ -507,7 +505,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         let removeParent = SKAction.run {
             self.removeFromParent()
         }
-
+        
         let wait = SKAction.wait(forDuration: 5)
         let sequence = SKAction.sequence([SKAction.fadeIn(withDuration: 1.0), wait, SKAction.fadeOut(withDuration: 1.0), removeParent])
         self.labelIntro.run(sequence)
