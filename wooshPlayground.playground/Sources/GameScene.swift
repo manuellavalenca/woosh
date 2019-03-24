@@ -24,6 +24,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     var death = false
     var gameStarted = false
     let startButton = SKSpriteNode()
+    var backgroundNode = SKSpriteNode()
     let wooshLogo = SKSpriteNode()
     let passLabel = SKSpriteNode()
     var arrayLabel = ["After all those billion years, you died","You've seen quite a lot around the space...", "Death is our only true, isn't?", "You had a magnificent life", "But well, life is a cycle", "Enjoy your ride"]
@@ -50,12 +51,42 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         wooshLogo.alpha = 1
         self.addChild(wooshLogo)
         
+        //Create background start button
+        backgroundNode.size = CGSize(width: 215, height: 112)
+        backgroundNode.position = CGPoint(x: 0, y: -(self.scene?.size.height)!/4)
+        backgroundNode.alpha = 1
+        self.addChild(backgroundNode)
+        
+        let wait = SKAction.wait(forDuration: 0.25)
+        let imageBGButton1 = SKAction.run {
+            self.backgroundNode.texture = SKTexture(image: UIImage(named: "startButtonBg-32.png")!)
+        }
+        let imageBGButton2 = SKAction.run {
+            self.backgroundNode.texture = SKTexture(image: UIImage(named: "startButtonBg2-33.png")!)
+        }
+        
+        let imageBGButton3 = SKAction.run {
+            self.backgroundNode.texture = SKTexture(image: UIImage(named: "startButtonBg-34.png")!)
+        }
+        
+        let bgSequence = SKAction.sequence([imageBGButton1, wait, imageBGButton2, wait, imageBGButton3, wait])
+        backgroundNode.run(SKAction.repeatForever(bgSequence))
+        
         // Create start button
-        startButton.size = CGSize(width: 200, height: 77)
-        startButton.texture = SKTexture(image: UIImage(named: "startButton-24.png")!)
-        startButton.position = CGPoint(x: 0, y: -(self.scene?.size.height)!/4)
-        startButton.alpha = 1
-        self.addChild(startButton)
+        self.startButton.size = CGSize(width: 200, height: 77)
+        self.startButton.position = CGPoint(x: 0, y: -(self.scene?.size.height)!/4)
+        self.startButton.alpha = 1
+        self.addChild(self.startButton)
+        
+        let imageButton1 = SKAction.run {
+            self.startButton.texture = SKTexture(image: UIImage(named: "startButton-24.png")!)
+        }
+        let imageButton2 = SKAction.run {
+            self.startButton.texture = SKTexture(image: UIImage(named: "startButton2-24.png")!)
+        }
+        let sequence = SKAction.sequence([imageButton1, wait, imageButton2, wait])
+        self.startButton.run(SKAction.repeatForever(sequence))
+        
     }
     
     public func playMusic() {
@@ -419,6 +450,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             
             self.wooshLogo.run(sequence)
             self.startButton.run(sequence)
+            self.backgroundNode.run(sequence)
             
             // Appear intro part
             self.introGame()
