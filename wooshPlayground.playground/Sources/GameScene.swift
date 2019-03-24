@@ -58,6 +58,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func playMusic() {
+        
+        // Set player to play song in loop
         let url = Bundle.main.url(forResource: "audio_hero_Song", withExtension: "mp3")!
         
         do {
@@ -139,27 +141,28 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     public func createComet(){
         
+        // Create comet node
         cometNode.position = CGPoint(x: 0, y: -(self.scene?.size.height)!/3)
         cometNode.zPosition = 2.0
+        let cometImage = UIImage(named: "wooshComet-12.png")!
+        cometNode.texture = SKTexture(image: cometImage)
+        cometNode.name = "comet"
+        cometNode.alpha = 0
+        cometNode.size = CGSize(width: cometImage.size.width/4, height: cometImage.size.height/4)
+        
+        // Create physics body to enable collisions
+        cometNode.physicsBody = SKPhysicsBody(texture: SKTexture(image: cometImage), size: CGSize(width: cometImage.size.width/4, height: cometImage.size.height/4))
+        cometNode.physicsBody?.affectedByGravity = false
+        cometNode.physicsBody?.allowsRotation = false
+        cometNode.physicsBody?.categoryBitMask = cometBitCategory
+        cometNode.physicsBody?.collisionBitMask =  sunBitCategory
+        cometNode.physicsBody?.contactTestBitMask = planetBitCategory
         
         // Avoid woosh comet to get out of scene
         let xRange = SKRange(lowerLimit: -((scene?.size.width)!/2),upperLimit: (scene?.size.width)!/2)
         let yRange = SKRange(lowerLimit: -(self.scene?.size.height)!/3,upperLimit: -(self.scene?.size.height)!/3)
         cometNode.constraints = [SKConstraint.positionX(xRange,y:yRange)]
         
-        let cometImage = UIImage(named: "wooshComet-12.png")!
-        cometNode.texture = SKTexture(image: cometImage)
-        cometNode.name = "comet"
-        cometNode.size = CGSize(width: cometImage.size.width/4, height: cometImage.size.height/4)
-        cometNode.physicsBody = SKPhysicsBody(texture: SKTexture(image: cometImage), size: CGSize(width: cometImage.size.width/4, height: cometImage.size.height/4))
-        cometNode.physicsBody?.affectedByGravity = false
-        cometNode.physicsBody?.allowsRotation = false
-        
-        cometNode.physicsBody?.categoryBitMask = cometBitCategory
-        cometNode.physicsBody?.collisionBitMask =  sunBitCategory
-        cometNode.physicsBody?.contactTestBitMask = planetBitCategory
-        
-        cometNode.alpha = 0
         self.addChild(cometNode)
         cometNode.run(SKAction.fadeAlpha(to:1, duration: 4.0))
         
@@ -208,6 +211,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         planet.zPosition = 2.0
         planet.texture = planetRandomTexture
         
+        // Create physics body to enable collisions
         planet.physicsBody = SKPhysicsBody(texture: planetRandomTexture, size: CGSize(width: (bluePlanetImage.size.width)/4, height: (bluePlanetImage.size.height)/4))
         planet.physicsBody?.categoryBitMask = planetBitCategory
         planet.physicsBody?.collisionBitMask = cometBitCategory
@@ -220,6 +224,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func createPlanetsTimer(){
+        
+        // Create timer to create planets with random interval
         let wait = SKAction.wait(forDuration: 4, withRange: 3)
         let spawn = SKAction.run {
             self.createPlanetNode()
@@ -230,6 +236,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func deletePlanets(){
+        
+        // Delete planets that have got out of screen
         self.enumerateChildNodes(withName: "planet") { (node, error) in
             if node.position.y < -((self.scene?.size.height)!/2 + node.frame.size.height){
                 node.removeFromParent()
@@ -242,6 +250,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     public func showTextsSun(){
         
+        // Set label for the comet's death
         self.labelDeath.position = CGPoint(x: 0, y: 0)
         self.labelDeath.name = "label"
         self.labelDeath.fontSize = 40.0
@@ -261,49 +270,33 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
 
     
     public func didBegin(_ contact: SKPhysicsContact) {
-
+ 
         if death == false {
             
             // Death with sun
             if (contact.bodyA.node?.name == "sun" && contact.bodyB.node?.name == "comet") || (contact.bodyA.node?.name == "comet" && contact.bodyB.node?.name == "sun") {
-                
                 
                 self.enumerateChildNodes(withName: "label") { (node, error) in
                     node.removeFromParent()
                 }
                 
                 self.showTextsSun()
-                
                 self.death = true
-                
-                var node = SKNode()
-                
-                
-                
-//                if contact.bodyB.node?.name == "comet"{
-//                    node = contact.bodyB.node!
-//                } else if contact.bodyA.node?.name == "comet"{
-//                    node = contact.bodyA.node!
-//                }
-//
-//
+
                 // Avoid killing it again when it has just died
                 let disablePlanetContact = SKAction.run {
                     self.cometNode.physicsBody?.categoryBitMask = self.sunBitCategory
                 }
-
-
+                
                 let fadeOut = SKAction.fadeAlpha(to:0, duration: 2.0)
                 self.cometNode.run(SKAction.sequence([disablePlanetContact,fadeOut]))
-                
             }
-            
         }
     }
     
     public func introGame(){
         
-        // Show users how to move Woosh
+        // Show users how to move woosh
         createComet()
         moveComet()
         
@@ -313,7 +306,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         self.ipadNode.texture = SKTexture(image: UIImage(named: "tabletinhoImage-30.png")!)
         self.addChild(ipadNode)
         
-        //Move ipad to the right
+        //Move ipad to the right and left
         let ipadRight = SKAction.run {
             self.ipadNode.zRotation = -(.pi / 8)
         }
@@ -337,9 +330,6 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
 //        self.labelIntro.zPosition = 5.0
 //
 //        self.addChild(self.labelIntro)
-
-        
-        
     }
     
     override public func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?){
@@ -363,15 +353,13 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             
             // Start game
             self.gameStarted = true
-
-            //createPlanetsTimer()
-        
-            
+            createPlanetsTimer()
             
         }
         
         if self.passLabel.contains(touchLocation) {
             
+            // Button to pass through label texts
             arrayLabelPosition += 1
             if arrayLabelPosition < arrayLabel.count{
                 self.labelDeath.text = arrayLabel[arrayLabelPosition]
@@ -388,11 +376,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     public func reviveComet(){
         
         let fadeIn = SKAction.fadeAlpha(to:1, duration: 2.0)
-        
         let enablePlanetContact = SKAction.run {
             self.cometNode.physicsBody?.categoryBitMask = self.cometBitCategory
         }
-        
         self.cometNode.run(SKAction.sequence([fadeIn, enablePlanetContact]))
 
     }
@@ -401,6 +387,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         if gameStarted == true{
             let xMovement = SKAction.moveTo(x: self.destX, duration: 1)
             
+            // Change comet image to the direction it is going
             if self.destX < (self.cometNode.position.x - 40) {
                 self.cometNode.texture = SKTexture(image: UIImage(named: "wooshComet-12-2.png")!)
             } else if self.destX > (self.cometNode.position.x + 40){
@@ -421,6 +408,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if self.rightMoved == true && self.leftMoved == true{
                 self.ipadNode.removeFromParent()
+                
             }
             
             self.cometNode.run(xMovement)
