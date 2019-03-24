@@ -90,11 +90,19 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         let sequence = SKAction.sequence([imageButton1, wait, imageButton2, wait])
         self.startButton.run(SKAction.repeatForever(sequence))
         
-        showPlanetsCount()
-        
     }
     
     public func showPlanetsCount(){
+        //        // Create label with number of planets collided
+        //        self.planetsCollidedLabel.position = CGPoint(x: 0, y: (self.scene?.size.height)!/1.3)
+        //        self.planetsCollidedLabel.name = "numberPlanets"
+        //        self.planetsCollidedLabel.fontSize = 40.0
+        //        self.planetsCollidedLabel.fontColor = UIColor.white
+        //        self.planetsCollidedLabel.zPosition = 10.0
+        //        self.planetsCollidedLabel.text = "Planet collisions left to die: \(5-self.planetsCollided)"
+        //
+        //        self.addChild(self.planetsCollidedLabel)
+        
         
         // Create planets count background
         self.planetsCountBackground.size = CGSize(width: 400, height: 100)
@@ -118,6 +126,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             planet.texture = SKTexture(image: UIImage(named: "planetEmpty-38.png")!)
             planet.zPosition = 10.0
             planet.alpha = 1
+            self.addChild(planet)
         }
     }
     
@@ -409,6 +418,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         emitter?.name = "emitter"
         emitter?.position = node.position
         emitter?.particleTexture = SKTexture(image: UIImage(named: "dinossaur-35.png")!)
+        self.planetsCountNodes[self.planetsCollided - 1].texture = SKTexture(image: UIImage(named: "planetFull-39.png")!)
         self.addChild(emitter!)
     }
     
@@ -417,6 +427,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         if self.planetsCollided >= 5{
             print("PERDEU MERMAO")
             self.planetsCollided = 0
+            for planet in self.planetsCountNodes{
+                planet.texture = SKTexture(image: UIImage(named: "planetEmpty-38.png")!)
+            }
             self.death = true
             
             let fadeOut = SKAction.fadeAlpha(to:0, duration: 2.0)
@@ -522,6 +535,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         //        }
         //let addCometNode = SKAction.run {
         self.addChild(self.cometNode)
+        for planet in self.planetsCountNodes{
+            planet.texture = SKTexture(image: UIImage(named: "planetEmpty-38.png")!)
+        }
         self.cometNode.alpha = 1
         self.cometNode.run(SKAction.fadeIn(withDuration: 2.0))
         self.death = false
