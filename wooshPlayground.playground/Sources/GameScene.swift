@@ -238,7 +238,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     public func createComet(){
         
         // Create comet node
-        cometNode.position = CGPoint(x: 0, y: -(self.scene?.size.height)!/2.3)
+        cometNode.position = CGPoint(x: 0, y: -((self.scene?.size.height)!/2.5))
         cometNode.zPosition = 2.0
         let cometImage = UIImage(named: "wooshComet-12.png")!
         cometNode.texture = SKTexture(image: cometImage)
@@ -256,7 +256,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Avoid woosh comet to get out of scene
         let xRange = SKRange(lowerLimit: -((scene?.size.width)!/2),upperLimit: (scene?.size.width)!/2)
-        let yRange = SKRange(lowerLimit: -(self.scene?.size.height)!/3,upperLimit: -(self.scene?.size.height)!/3)
+        let yRange = SKRange(lowerLimit: cometNode.position.y, upperLimit: cometNode.position.y)
         cometNode.constraints = [SKConstraint.positionX(xRange,y:yRange)]
         
         self.addChild(cometNode)
@@ -470,7 +470,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         emitter?.name = "emitter"
         emitter?.position = node.position
         emitter?.particleTexture = SKTexture(image: UIImage(named: "dinossaur-35.png")!)
-        if self.planetsCollided <= self.planetsCountNodes.count{
+        if self.planetsCollided < self.planetsCountNodes.count{
             self.planetsCountNodes[self.planetsCollided].texture = SKTexture(image: UIImage(named: "planetFull-39.png")!)
         } else{
             self.planetsCountNodes[2].texture = SKTexture(image: UIImage(named: "planetFull-39.png")!)
