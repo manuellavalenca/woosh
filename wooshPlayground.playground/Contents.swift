@@ -11,12 +11,6 @@
  
  Music from https://www.zapsplat.com
  
- *[Designing your tutorial](Designing)
- 
- # Sources
- 
- This is an **amazing** page of sources.
- 
  */
 
 import PlaygroundSupport

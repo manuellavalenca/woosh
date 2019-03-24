@@ -17,6 +17,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     var motionManager = CMMotionManager()
     
     var rightMoved = false
+    var deathScreen = SKShapeNode()
     var leftMoved = false
     var ipadNode = SKSpriteNode()
     var labelIntro = SKLabelNode()
@@ -46,7 +47,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public func createHomeScreen(){
-        
+        emitStarts()
         // Create Woosh Logo
         wooshLogo.texture = SKTexture(image: UIImage(named: "wooshName-28.png")!)
         wooshLogo.size = CGSize(width: 800, height: 453)
@@ -106,7 +107,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Create planets count background
         self.planetsCountBackground.size = CGSize(width: 400, height: 100)
-        self.planetsCountBackground.position = CGPoint(x: 0, y: (self.scene?.size.height)!/2.2)
+        self.planetsCountBackground.position = CGPoint(x: 0, y: (self.scene?.size.height)!/3)
         self.planetsCountBackground.texture = SKTexture(image: UIImage(named: "backgroundPlanetCount-36.png")!)
         self.planetsCountBackground.zPosition = 10.0
         self.planetsCountBackground.alpha = 1
@@ -122,7 +123,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         self.planetsCountNodes = [planet1, planet2, planet3, planet4, planet5]
         for planet in self.planetsCountNodes{
             planet.size = CGSize(width: 60, height: 60)
-            planet.position = CGPoint(x: CGFloat((70 * self.planetsCountNodes.firstIndex(of: planet)!)) + self.planetsCountBackground.frame.minX + 60, y: (self.scene?.size.height)!/2.2)
+            planet.position = CGPoint(x: CGFloat((70 * self.planetsCountNodes.firstIndex(of: planet)!)) + self.planetsCountBackground.frame.minX + 60, y: (self.scene?.size.height)!/3)
             planet.texture = SKTexture(image: UIImage(named: "planetEmpty-38.png")!)
             planet.zPosition = 10.0
             planet.alpha = 1
@@ -319,21 +320,23 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     public func createPlanetsTimer(){
         
-        // Create timer to create planets with random interval
-        let wait = SKAction.wait(forDuration: 4, withRange: 3)
-        let spawn = SKAction.run {
-            self.createPlanetNode()
-        }
-        
-        let sequence = SKAction.sequence([wait, spawn])
-        self.run(SKAction.repeatForever(sequence))
-        
-        
-        self.enumerateChildNodes(withName: "planet") { (node, error) in
-            if node.position.y < -((self.scene?.size.height)!/2 + node.frame.size.height){
-                node.removeFromParent()
-            } else {
-                node.position.y -= 2.0
+        if self.death == false{
+            // Create timer to create planets with random interval
+            let wait = SKAction.wait(forDuration: 4, withRange: 3)
+            let spawn = SKAction.run {
+                self.createPlanetNode()
+            }
+            
+            let sequence = SKAction.sequence([wait, spawn])
+            self.run(SKAction.repeatForever(sequence))
+            
+            
+            self.enumerateChildNodes(withName: "planet") { (node, error) in
+                if node.position.y < -((self.scene?.size.height)!/2 + node.frame.size.height){
+                    node.removeFromParent()
+                } else {
+                    node.position.y -= 2.0
+                }
             }
         }
         
@@ -342,7 +345,32 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     public func showTextsSun(){
         
+        // Remove sky, planets and emitters
+        self.enumerateChildNodes(withName: "sky") { (node, error) in
+            node.removeFromParent()
+        }
+        
+        //        self.enumerateChildNodes(withName: "planet") { (node, error) in
+        //            node.removeFromParent()
+        //        }
+        //
+        //        self.enumerateChildNodes(withName: "emiter") { (node, error) in
+        //            node.removeFromParent()
+        //        }
+        
         //self.arrayLabelPosition = 0
+        
+        self.planetsCountBackground.removeFromParent()
+        for planet in planetsCountNodes{
+            planet.removeFromParent()
+        }
+        
+        self.deathScreen = SKShapeNode(rectOf: CGSize(width: (scene?.size.width)!, height: (scene?.size.height)!))
+        self.deathScreen.fillColor = UIColor.black
+        self.deathScreen.position = CGPoint(x: 0, y: 0)
+        self.deathScreen.name = "deathScreen"
+        self.deathScreen.alpha = 1
+        self.addChild(self.deathScreen)
         
         // Set label for the comet's death
         self.labelDeath.position = CGPoint(x: 0, y: 0)
@@ -387,6 +415,10 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 self.cometNode.run(SKAction.sequence([fadeOut, wait, removeNode]))
                 
+                for planet in self.planetsCountNodes{
+                    planet.texture = SKTexture(image: UIImage(named: "planetEmpty-38.png")!)
+                }
+                
             }
             
             // Collision with planet
@@ -405,21 +437,32 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                     collidedPlanetNode.removeFromParent()
                 }
                 
-                self.emmitParticles(node: collidedPlanetNode)
+                self.emitParticles(node: collidedPlanetNode)
                 
             }
             
         }
     }
     
-    public func emmitParticles(node: SKNode){
-        self.planetsCollided += 1
+    public func emitParticles(node: SKNode){
         let emitter = SKEmitterNode(fileNamed: "Emitter.sks")
         emitter?.name = "emitter"
         emitter?.position = node.position
         emitter?.particleTexture = SKTexture(image: UIImage(named: "dinossaur-35.png")!)
-        self.planetsCountNodes[self.planetsCollided - 1].texture = SKTexture(image: UIImage(named: "planetFull-39.png")!)
+        if self.planetsCollided <= self.planetsCountNodes.count{
+            self.planetsCountNodes[self.planetsCollided].texture = SKTexture(image: UIImage(named: "planetFull-39.png")!)
+        } else{
+            self.planetsCountNodes[4].texture = SKTexture(image: UIImage(named: "planetFull-39.png")!)
+        }
+        self.planetsCollided += 1
+        
         self.addChild(emitter!)
+    }
+    
+    public func emitStarts(){
+        //        let starsEmitter = SKEmitterNode(fileNamed: "Emitter.sks")
+        //        starsEmitter?.name = "emitter"
+        //        self.addChild(starsEmitter!)
     }
     
     public func verifyPlanetsCollided(){
@@ -518,6 +561,10 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.labelDeath.text = arrayLabel[arrayLabelPosition]
             } else{
                 print("ENTROU NA ULTIMA LABEL")
+                self.death = false
+                self.reviveSky()
+                showPlanetsCount()
+                self.deathScreen.removeFromParent()
                 arrayLabelPosition = 0
                 self.labelDeath.removeFromParent()
                 self.passLabel.removeFromParent()
@@ -525,6 +572,12 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
+    }
+    
+    public func reviveSky(){
+        // REINICIAR POSICOES DO CEU
+        
+        createSky()
     }
     
     public func reviveComet(){
@@ -540,7 +593,6 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         self.cometNode.alpha = 1
         self.cometNode.run(SKAction.fadeIn(withDuration: 2.0))
-        self.death = false
         //}
         //let wait = SKAction.wait(forDuration: 0.25)
         //self.cometNode.run(SKAction.sequence([addCometNode, wait, SKAction.fadeIn(withDuration: 2.0)]))
