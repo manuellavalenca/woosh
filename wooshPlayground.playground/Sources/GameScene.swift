@@ -21,6 +21,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     var ipadNode = SKSpriteNode()
     var labelIntro = SKLabelNode()
     var labelDeath = SKLabelNode()
+    var planetsCollidedLabel = SKLabelNode()
+    var planetsCountBackground = SKSpriteNode()
+    var planetsCountNodes = [SKSpriteNode()]
     var death = false
     var gameStarted = false
     let startButton = SKSpriteNode()
@@ -87,6 +90,35 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         let sequence = SKAction.sequence([imageButton1, wait, imageButton2, wait])
         self.startButton.run(SKAction.repeatForever(sequence))
         
+        showPlanetsCount()
+        
+    }
+    
+    public func showPlanetsCount(){
+        
+        // Create planets count background
+        self.planetsCountBackground.size = CGSize(width: 400, height: 100)
+        self.planetsCountBackground.position = CGPoint(x: 0, y: (self.scene?.size.height)!/2.2)
+        self.planetsCountBackground.texture = SKTexture(image: UIImage(named: "backgroundPlanetCount-36.png")!)
+        self.planetsCountBackground.zPosition = 10.0
+        self.planetsCountBackground.alpha = 1
+        self.addChild(self.planetsCountBackground)
+        
+        // Create planets
+        let planet1 = SKSpriteNode()
+        let planet2 = SKSpriteNode()
+        let planet3 = SKSpriteNode()
+        let planet4 = SKSpriteNode()
+        let planet5 = SKSpriteNode()
+        
+        self.planetsCountNodes = [planet1, planet2, planet3, planet4, planet5]
+        for planet in self.planetsCountNodes{
+            planet.size = CGSize(width: 60, height: 60)
+            planet.position = CGPoint(x: CGFloat((70 * self.planetsCountNodes.firstIndex(of: planet)!)) + self.planetsCountBackground.frame.minX + 60, y: (self.scene?.size.height)!/2.2)
+            planet.texture = SKTexture(image: UIImage(named: "planetEmpty-38.png")!)
+            planet.zPosition = 10.0
+            planet.alpha = 1
+        }
     }
     
     public func playMusic() {
@@ -376,6 +408,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         let emitter = SKEmitterNode(fileNamed: "Emitter.sks")
         emitter?.name = "emitter"
         emitter?.position = node.position
+        emitter?.particleTexture = SKTexture(image: UIImage(named: "dinossaur-35.png")!)
         self.addChild(emitter!)
     }
     
@@ -458,6 +491,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             // Start game
             self.gameStarted = true
             createPlanetsTimer()
+            showPlanetsCount()
             
         }
         
@@ -527,8 +561,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             
             self.cometNode.run(xMovement)
             self.moveNodes()
-            
             self.verifyPlanetsCollided()
+            self.planetsCollidedLabel.text = "Planet collisions left to die: \(5-self.planetsCollided)"
         }
     }
 }
