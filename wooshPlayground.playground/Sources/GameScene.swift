@@ -177,6 +177,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         sunNode.zPosition = 2.0
         sunNode.name = "sun"
         
+        sunNode.fillColor = UIColor.red
         sunNode.physicsBody = SKPhysicsBody(rectangleOf: sunNode.frame.size)
         sunNode.physicsBody?.categoryBitMask = sunBitCategory
         sunNode.physicsBody?.collisionBitMask = cometBitCategory
@@ -237,7 +238,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     public func createComet(){
         
         // Create comet node
-        cometNode.position = CGPoint(x: 0, y: -(self.scene?.size.height)!/3)
+        cometNode.position = CGPoint(x: 0, y: -(self.scene?.size.height)!/2.3)
         cometNode.zPosition = 2.0
         let cometImage = UIImage(named: "wooshComet-12.png")!
         cometNode.texture = SKTexture(image: cometImage)
@@ -324,7 +325,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             // Create timer to create planets with random interval
             let wait = SKAction.wait(forDuration: 4, withRange: 3)
             let spawn = SKAction.run {
-                self.createPlanetNode()
+                if self.death == false{
+                    self.createPlanetNode()
+                }
             }
             
             let sequence = SKAction.sequence([wait, spawn])
@@ -350,9 +353,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             node.removeFromParent()
         }
         
-        //        self.enumerateChildNodes(withName: "planet") { (node, error) in
-        //            node.removeFromParent()
-        //        }
+        self.enumerateChildNodes(withName: "planet") { (node, error) in
+            node.removeFromParent()
+        }
         //
         //        self.enumerateChildNodes(withName: "emiter") { (node, error) in
         //            node.removeFromParent()
@@ -492,36 +495,22 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         createComet()
         moveComet()
         
-        self.ipadNode.size = CGSize(width: 300, height: 363)
-        self.ipadNode.position = CGPoint(x: 0, y: (self.scene?.size.height)!/5)
-        self.ipadNode.alpha = 1
-        self.ipadNode.texture = SKTexture(image: UIImage(named: "tabletinhoImage-30.png")!)
-        self.addChild(ipadNode)
+        self.labelIntro.position = CGPoint(x: 0, y: 0)
+        self.labelIntro.name = "labelIntro"
+        self.labelIntro.text = "Rotate the ipad to the left and to the right"
+        self.labelIntro.fontSize = 40.0
+        self.labelIntro.fontColor = UIColor.white
+        self.labelIntro.zPosition = 10.0
+        self.labelIntro.alpha = 0
         
-        //Move ipad to the right and left
-        let ipadRight = SKAction.run {
-            self.ipadNode.zRotation = -(.pi / 8)
+        self.addChild(self.labelIntro)
+        let removeParent = SKAction.run {
+            self.removeFromParent()
         }
-        let ipadUpstand = SKAction.run {
-            self.ipadNode.zRotation = 0
-        }
-        let ipadLeft = SKAction.run {
-            self.ipadNode.zRotation = .pi / 8
-        }
-        let wait = SKAction.wait(forDuration: 1.0)
-        //let fadeIn = SKAction.fadeAlpha(to: 1, duration: 2.5)
-        
-        let sequence = SKAction.sequence([ipadUpstand, wait, ipadRight, wait,ipadUpstand, wait, ipadLeft, wait])
-        self.ipadNode.run(SKAction.repeatForever(sequence))
-        
-        
-        //        self.labelIntro.position = CGPoint(x: 0, y: 0)
-        //        self.labelIntro.name = "Move the ipad to the "
-        //        self.labelIntro.fontSize = 40.0
-        //        self.labelIntro.fontColor = UIColor.white
-        //        self.labelIntro.zPosition = 5.0
-        //
-        //        self.addChild(self.labelIntro)
+
+        let wait = SKAction.wait(forDuration: 5)
+        let sequence = SKAction.sequence([SKAction.fadeIn(withDuration: 1.0), wait, SKAction.fadeOut(withDuration: 1.0), removeParent])
+        self.labelIntro.run(sequence)
     }
     
     override public func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?){
