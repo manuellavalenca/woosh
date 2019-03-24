@@ -28,6 +28,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     let passLabel = SKSpriteNode()
     var arrayLabel = ["After all those billion years, you died","You've seen quite a lot around the space...", "Death is our only true, isn't?", "You had a magnificent life", "But well, life is a cycle", "Enjoy your ride"]
     var arrayLabelPosition = 0
+    var planetsCollided = 0
     
     var player : AVAudioPlayer?
     
@@ -115,10 +116,10 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         sunNode.alpha = 0.0
         self.addChild(sunNode)
-
+        
     }
     
-    public func moveSky(){
+    public func moveNodes(){
         
         // Move sky nodes and change position after
         self.enumerateChildNodes(withName: "sky") { (node, error) in
@@ -134,7 +135,28 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             if node.frame.minY < -((self.scene?.size.height)!/2 + node.frame.height) {
                 node.position.y = (4 * (self.scene?.size.height)!) + 400
             }
-
+            
+        }
+        
+        // Move planets and delete the ones that got out of screen
+        self.enumerateChildNodes(withName: "planet") { (node, error) in
+            if node.position.y < -((self.scene?.size.height)!/2 + node.frame.size.height){
+                node.removeFromParent()
+            }
+            else{
+                node.position.y -= 2.0
+                
+            }
+        }
+        
+        self.enumerateChildNodes(withName: "emitter") { (node, error) in
+            if node.position.y < -((self.scene?.size.height)!/2 + node.frame.size.height){
+                node.removeFromParent()
+            }
+            else{
+                node.position.y -= 2.0
+                
+            }
         }
         
     }
@@ -233,22 +255,22 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let sequence = SKAction.sequence([wait, spawn])
         self.run(SKAction.repeatForever(sequence))
-    }
-    
-    public func deletePlanets(){
         
-        // Delete planets that have got out of screen
+        
         self.enumerateChildNodes(withName: "planet") { (node, error) in
             if node.position.y < -((self.scene?.size.height)!/2 + node.frame.size.height){
                 node.removeFromParent()
-            }
-            else{
+            } else {
                 node.position.y -= 2.0
             }
         }
+        
     }
     
+    
     public func showTextsSun(){
+        
+        //self.arrayLabelPosition = 0
         
         // Set label for the comet's death
         self.labelDeath.position = CGPoint(x: 0, y: 0)
@@ -257,7 +279,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         self.labelDeath.fontColor = UIColor.white
         self.labelDeath.zPosition = 5.0
         self.labelDeath.text = arrayLabel[arrayLabelPosition]
-
+        
         self.addChild(self.labelDeath)
         
         // Create button to go through labels
@@ -265,13 +287,13 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         passLabel.texture = SKTexture(image: UIImage(named: "passLabelButton-27.png")!)
         passLabel.position = CGPoint(x: 0, y: -100);
         self.addChild(passLabel)
-
+        
     }
-
+    
     
     public func didBegin(_ contact: SKPhysicsContact) {
- 
-        if death == false {
+        
+        if self.death == false {
             
             // Death with sun
             if (contact.bodyA.node?.name == "sun" && contact.bodyB.node?.name == "comet") || (contact.bodyA.node?.name == "comet" && contact.bodyB.node?.name == "sun") {
@@ -282,15 +304,65 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 
                 self.showTextsSun()
                 self.death = true
-
-                // Avoid killing it again when it has just died
-                let disablePlanetContact = SKAction.run {
-                    self.cometNode.physicsBody?.categoryBitMask = self.sunBitCategory
-                }
+                self.planetsCollided = 0
+                
+                // Fade out dead comet
                 
                 let fadeOut = SKAction.fadeAlpha(to:0, duration: 2.0)
-                self.cometNode.run(SKAction.sequence([disablePlanetContact,fadeOut]))
+                let wait = SKAction.wait(forDuration: 0.25)
+                let removeNode = SKAction.run {
+                    self.cometNode.removeFromParent()
+                }
+                self.cometNode.run(SKAction.sequence([fadeOut, wait, removeNode]))
+                
             }
+            
+            // Collision with planet
+            if (contact.bodyA.node?.name == "planet" && contact.bodyB.node?.name == "comet") || (contact.bodyA.node?.name == "comet" && contact.bodyB.node?.name == "planet") {
+                
+                
+                var collidedPlanetNode  = SKSpriteNode()
+                
+                if contact.bodyA.node?.name == "planet"{
+                    collidedPlanetNode = contact.bodyA.node as! SKSpriteNode
+                    collidedPlanetNode.removeFromParent()
+                }
+                
+                if contact.bodyB.node?.name == "planet"{
+                    collidedPlanetNode = contact.bodyB.node as! SKSpriteNode
+                    collidedPlanetNode.removeFromParent()
+                }
+                
+                self.emmitParticles(node: collidedPlanetNode)
+                
+            }
+            
+        }
+    }
+    
+    public func emmitParticles(node: SKNode){
+        self.planetsCollided += 1
+        let emitter = SKEmitterNode(fileNamed: "Emitter.sks")
+        emitter?.name = "emitter"
+        emitter?.position = node.position
+        self.addChild(emitter!)
+    }
+    
+    public func verifyPlanetsCollided(){
+        print("PLANETS COLLIDED: \(self.planetsCollided)")
+        if self.planetsCollided >= 5{
+            print("PERDEU MERMAO")
+            self.planetsCollided = 0
+            self.death = true
+            
+            let fadeOut = SKAction.fadeAlpha(to:0, duration: 2.0)
+            let wait = SKAction.wait(forDuration: 0.25)
+            let removeNode = SKAction.run {
+                self.cometNode.removeFromParent()
+            }
+            
+            self.cometNode.run(SKAction.sequence([fadeOut, wait, removeNode]))
+            self.showTextsSun()
         }
     }
     
@@ -317,19 +389,19 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             self.ipadNode.zRotation = .pi / 8
         }
         let wait = SKAction.wait(forDuration: 1.0)
-        let fadeIn = SKAction.fadeAlpha(to: 1, duration: 2.5)
+        //let fadeIn = SKAction.fadeAlpha(to: 1, duration: 2.5)
         
         let sequence = SKAction.sequence([ipadUpstand, wait, ipadRight, wait,ipadUpstand, wait, ipadLeft, wait])
         self.ipadNode.run(SKAction.repeatForever(sequence))
         
         
-//        self.labelIntro.position = CGPoint(x: 0, y: 0)
-//        self.labelIntro.name = "Move the ipad to the "
-//        self.labelIntro.fontSize = 40.0
-//        self.labelIntro.fontColor = UIColor.white
-//        self.labelIntro.zPosition = 5.0
-//
-//        self.addChild(self.labelIntro)
+        //        self.labelIntro.position = CGPoint(x: 0, y: 0)
+        //        self.labelIntro.name = "Move the ipad to the "
+        //        self.labelIntro.fontSize = 40.0
+        //        self.labelIntro.fontColor = UIColor.white
+        //        self.labelIntro.zPosition = 5.0
+        //
+        //        self.addChild(self.labelIntro)
     }
     
     override public func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?){
@@ -361,9 +433,12 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             
             // Button to pass through label texts
             arrayLabelPosition += 1
+            print("ARRAY POSITION: \(self.arrayLabelPosition)")
             if arrayLabelPosition < arrayLabel.count{
+                print("LENDO AS LABEL")
                 self.labelDeath.text = arrayLabel[arrayLabelPosition]
             } else{
+                print("ENTROU NA ULTIMA LABEL")
                 arrayLabelPosition = 0
                 self.labelDeath.removeFromParent()
                 self.passLabel.removeFromParent()
@@ -375,12 +450,19 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     public func reviveComet(){
         
-        let fadeIn = SKAction.fadeAlpha(to:1, duration: 2.0)
-        let enablePlanetContact = SKAction.run {
-            self.cometNode.physicsBody?.categoryBitMask = self.cometBitCategory
-        }
-        self.cometNode.run(SKAction.sequence([fadeIn, enablePlanetContact]))
-
+        //let fadeIn = SKAction.fadeAlpha(to:1, duration: 2.0)
+        //        let enablePlanetContact = SKAction.run {
+        //            self.cometNode.physicsBody?.categoryBitMask = self.cometBitCategory
+        //        }
+        //let addCometNode = SKAction.run {
+        self.addChild(self.cometNode)
+        self.cometNode.alpha = 1
+        self.cometNode.run(SKAction.fadeIn(withDuration: 2.0))
+        self.death = false
+        //}
+        //let wait = SKAction.wait(forDuration: 0.25)
+        //self.cometNode.run(SKAction.sequence([addCometNode, wait, SKAction.fadeIn(withDuration: 2.0)]))
+        
     }
     
     override public func update(_ currentTime: TimeInterval) {
@@ -412,8 +494,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             self.cometNode.run(xMovement)
-            moveSky()
-            deletePlanets()
+            self.moveNodes()
+            
+            self.verifyPlanetsCollided()
         }
     }
 }
