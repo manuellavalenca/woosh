@@ -38,14 +38,14 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     var planetsCollided = 0
     
     var player : AVAudioPlayer?
+    var buttonPlayer : AVAudioPlayer?
     
     
     override public func didMove(to view: SKView) {
         self.physicsWorld.contactDelegate = self
-        playMusic()
         createSky()
         createHomeScreen()
-        
+        playMusic()
     }
     
     public func createHomeScreen(){
@@ -139,12 +139,32 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         do {
             player = try AVAudioPlayer(contentsOf: url)
             guard let player = player else { return }
-            player.numberOfLoops = -1
+            //player.numberOfLoops = 0
             player.prepareToPlay()
             player.play()
         } catch let error {
             print(error.localizedDescription)
         }
+        
+    }
+    
+    public func playButtonSound() {
+        
+        
+        // Set player to play sound with button tap
+        let url = Bundle.main.url(forResource: "button", withExtension: "mp3")!
+        
+        do {
+            self.buttonPlayer = try AVAudioPlayer(contentsOf: url)
+            guard let player = self.buttonPlayer else { return }
+            //player.numberOfLoops = 0
+            player.prepareToPlay()
+            player.play()
+        } catch let error {
+            print(error.localizedDescription)
+        }
+        
+        
         
     }
     
@@ -555,6 +575,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             self.gameStarted = true
             createPlanetsTimer()
             showPlanetsCount()
+            
+            // Play button sound
+            playButtonSound()
             
         }
         
