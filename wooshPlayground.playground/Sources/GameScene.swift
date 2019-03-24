@@ -16,7 +16,10 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     var accelerationx : Double = 0.0
     var motionManager = CMMotionManager()
     
-    
+    var rightMoved = false
+    var leftMoved = false
+    var ipadNode = SKSpriteNode()
+    var labelIntro = SKLabelNode()
     var labelDeath = SKLabelNode()
     var death = false
     var gameStarted = false
@@ -298,24 +301,71 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    public func introGame(){
+        
+        // Show users how to move Woosh
+        createComet()
+        moveComet()
+        
+        self.ipadNode.size = CGSize(width: 300, height: 363)
+        self.ipadNode.position = CGPoint(x: 0, y: (self.scene?.size.height)!/5)
+        self.ipadNode.alpha = 1
+        self.ipadNode.texture = SKTexture(image: UIImage(named: "tabletinhoImage-30.png")!)
+        self.addChild(ipadNode)
+        
+        //Move ipad to the right
+        let ipadRight = SKAction.run {
+            self.ipadNode.zRotation = -(.pi / 8)
+        }
+        let ipadUpstand = SKAction.run {
+            self.ipadNode.zRotation = 0
+        }
+        let ipadLeft = SKAction.run {
+            self.ipadNode.zRotation = .pi / 8
+        }
+        let wait = SKAction.wait(forDuration: 1.0)
+        let fadeIn = SKAction.fadeAlpha(to: 1, duration: 2.5)
+        
+        let sequence = SKAction.sequence([ipadUpstand, wait, ipadRight, wait,ipadUpstand, wait, ipadLeft, wait])
+        self.ipadNode.run(SKAction.repeatForever(sequence))
+        
+        
+//        self.labelIntro.position = CGPoint(x: 0, y: 0)
+//        self.labelIntro.name = "Move the ipad to the "
+//        self.labelIntro.fontSize = 40.0
+//        self.labelIntro.fontColor = UIColor.white
+//        self.labelIntro.zPosition = 5.0
+//
+//        self.addChild(self.labelIntro)
+
+        
+        
+    }
+    
     override public func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?){
         let touch = touches.first
         let touchLocation = touch!.location(in: self)
         
         if self.startButton.contains(touchLocation) && self.gameStarted == false {
             
-            self.gameStarted = true
-            createComet()
-            moveComet()
-            createPlanetsTimer()
+            // Fade out home screen
             let fadeOut = SKAction.fadeAlpha(to:0, duration: 1.5)
             let deleteNode = SKAction.run {
                 self.removeFromParent()
             }
             let sequence = SKAction.sequence([fadeOut, deleteNode])
-           
+            
             self.wooshLogo.run(sequence)
             self.startButton.run(sequence)
+            
+            // Appear intro part
+            self.introGame()
+            
+            // Start game
+            self.gameStarted = true
+
+            //createPlanetsTimer()
+        
             
             
         }
@@ -329,13 +379,13 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 arrayLabelPosition = 0
                 self.labelDeath.removeFromParent()
                 self.passLabel.removeFromParent()
-                self.rebornComet()
+                self.reviveComet()
             }
         }
         
     }
     
-    public func rebornComet(){
+    public func reviveComet(){
         
         let fadeIn = SKAction.fadeAlpha(to:1, duration: 2.0)
         
@@ -357,6 +407,20 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.cometNode.texture = SKTexture(image: UIImage(named: "wooshComet-12.png")!)
             } else{
                 self.cometNode.texture = SKTexture(image: UIImage(named: "wooshComet-29.png")!)
+            }
+            
+            
+            // Identify user has moved ipad to begin the game
+            if self.destX - self.cometNode.position.x > 30 {
+                self.rightMoved = true
+            }
+            
+            if self.destX - self.cometNode.position.x < -30{
+                self.leftMoved = true
+            }
+            
+            if self.rightMoved == true && self.leftMoved == true{
+                self.ipadNode.removeFromParent()
             }
             
             self.cometNode.run(xMovement)
