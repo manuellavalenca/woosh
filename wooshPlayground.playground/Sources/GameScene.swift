@@ -26,12 +26,14 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     var planetsCountBackground = SKSpriteNode()
     var planetsCountNodes = [SKSpriteNode()]
     var death = false
+    var deathType = ""
     var gameStarted = false
     let startButton = SKSpriteNode()
     var backgroundNode = SKSpriteNode()
     let wooshLogo = SKSpriteNode()
     let passLabel = SKSpriteNode()
-    var arrayLabel = ["After all those billion years, you died","You've seen quite a lot around the space...", "Death is our only true, isn't?", "You had a magnificent life", "But well, life is a cycle", "Enjoy your ride"]
+    var arrayLabel = ["After all those billion years, you died...","After colliding with three planets", "Let's try another time", "Try to dodge all the planets", "Enjoy your ride"]
+    var arrayLabelSun = ["After all those billion years, you died...","You avoid lots of planet collisions", "But you can't dodge the sun", "There are only two certainties in life", " – death and taxes", "Enjoy your ride"]
     var arrayLabelPosition = 0
     var planetsCollided = 0
     
@@ -379,7 +381,12 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         self.labelDeath.fontSize = 40.0
         self.labelDeath.fontColor = UIColor.white
         self.labelDeath.zPosition = 5.0
-        self.labelDeath.text = arrayLabel[arrayLabelPosition]
+        
+        if self.deathType == "sun"{
+            self.labelDeath.text = arrayLabelSun[arrayLabelPosition]
+        } else{
+            self.labelDeath.text = arrayLabel[arrayLabelPosition]
+        }
         
         self.addChild(self.labelDeath)
         
@@ -403,6 +410,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                     node.removeFromParent()
                 }
                 
+                self.deathType = "sun"
                 self.showTextsSun()
                 self.death = true
                 self.planetsCollided = 0
@@ -475,7 +483,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 planet.texture = SKTexture(image: UIImage(named: "planetEmpty-38.png")!)
             }
             self.death = true
-            
+            self.deathType = "planet"
             let fadeOut = SKAction.fadeAlpha(to:0, duration: 2.0)
             let wait = SKAction.wait(forDuration: 0.25)
             let removeNode = SKAction.run {
@@ -541,22 +549,46 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         if self.passLabel.contains(touchLocation) {
             
             // Button to pass through label texts
-            arrayLabelPosition += 1
-            print("ARRAY POSITION: \(self.arrayLabelPosition)")
-            if arrayLabelPosition < arrayLabel.count{
-                print("LENDO AS LABEL")
-                self.labelDeath.text = arrayLabel[arrayLabelPosition]
+            
+            // death with sun
+            if self.deathType == "sun"{
+                arrayLabelPosition += 1
+                print("ARRAY POSITION: \(self.arrayLabelPosition)")
+                if arrayLabelPosition < arrayLabelSun.count{
+                    print("LENDO AS LABEL")
+                    self.labelDeath.text = arrayLabelSun[arrayLabelPosition]
+                } else{
+                    print("ENTROU NA ULTIMA LABEL")
+                    self.death = false
+                    self.reviveSky()
+                    showPlanetsCount()
+                    self.deathScreen.removeFromParent()
+                    arrayLabelPosition = 0
+                    self.labelDeath.removeFromParent()
+                    self.passLabel.removeFromParent()
+                    self.reviveComet()
+                }
+                
+                // death with planet
             } else{
-                print("ENTROU NA ULTIMA LABEL")
-                self.death = false
-                self.reviveSky()
-                showPlanetsCount()
-                self.deathScreen.removeFromParent()
-                arrayLabelPosition = 0
-                self.labelDeath.removeFromParent()
-                self.passLabel.removeFromParent()
-                self.reviveComet()
+                arrayLabelPosition += 1
+                print("ARRAY POSITION: \(self.arrayLabelPosition)")
+                if arrayLabelPosition < arrayLabel.count{
+                    print("LENDO AS LABEL")
+                    self.labelDeath.text = arrayLabel[arrayLabelPosition]
+                } else{
+                    print("ENTROU NA ULTIMA LABEL")
+                    self.death = false
+                    self.reviveSky()
+                    showPlanetsCount()
+                    self.deathScreen.removeFromParent()
+                    arrayLabelPosition = 0
+                    self.labelDeath.removeFromParent()
+                    self.passLabel.removeFromParent()
+                    self.reviveComet()
+                }
             }
+            
         }
         
     }
