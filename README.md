@@ -1,5 +1,5 @@
 <p align="center">
-	  <img src="https://github.com/gabrieldluca/mosaic/blob/master/Mosaic.playground/Resources/Images/logo.png" width=275 height=249/>
+	  <img src="https://raw.githubusercontent.com/manuellavalenca/woosh/master/images/wooshLogo-16.png" width=275 height=249/>
 	</p> 
 
 # Woosh
